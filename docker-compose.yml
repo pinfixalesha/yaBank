@@ -6,7 +6,29 @@ services:
     ports:
       - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
     environment:
-      SERVER_PORT: ${EUREKA_SERVER_PORT}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+    networks:
+      - postgres_network
+
+  notifications-application:
+    build:
+      context: ./notificationsApplication
+      dockerfile: Dockerfile
+    ports:
+      - "${NOTIFICATIONS_SERVER_PORT}:${NOTIFICATIONS_SERVER_PORT}"
+    environment:
+      DATASOURCE_URL: ${DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      NOTIFICATIONS_SERVER_PORT: ${NOTIFICATIONS_SERVER_PORT}
+      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+      EUREKA_ZONE: ${EUREKA_ZONE}
+    depends_on:
+      - postgres-db
+      - eureka-service-discovery
+    networks:
+      - postgres_network
+
 
   postgres-db:
     image: postgres

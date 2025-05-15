@@ -1,7 +1,0 @@
-services:
-  eureka-service-discovery:
-    build: .
-    ports:
-      - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
-    environment:
-      EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}

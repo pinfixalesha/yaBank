@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: yaBank tables notification
+      author: Pinayev Aleksey
+      changes:
+        - createTable:
+            schemaName: notification
+            tableName: notifications_log
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Email получателя"
+              - column:
+                  name: application_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: "Сервис отправитель сообщения"
+              - column:
+                  name: message
+                  type: varchar(1024)
+                  constraints:
+                    nullable: false
+                  remarks: "Сообщение"

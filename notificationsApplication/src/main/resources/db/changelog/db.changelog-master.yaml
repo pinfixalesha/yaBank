@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-notification-schema
+      author: your_name
+      changes:
+        - sql:
+            sql: "CREATE SCHEMA IF NOT EXISTS notification;"
+      runAlways: false
+      runOnChange: false
+  - include:
+      file: db/changelog/tables/notification.yaml
