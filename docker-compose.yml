@@ -1,4 +1,20 @@
 services:
+  configserver:
+    build:
+      context: ./configServerService
+      dockerfile: Dockerfile
+    ports:
+      - "${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}"
+    environment:
+      CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
+    networks:
+      - postgres_network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:${CONFIG_SERVER_PORT}/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   eureka-service-discovery:
     build:
       context: ./eurekaServiceDiscovery
@@ -7,6 +23,15 @@ services:
       - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
     environment:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    depends_on:
+      configserver:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:${EUREKA_SERVER_PORT}/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - postgres_network
 
@@ -23,12 +48,16 @@ services:
       NOTIFICATIONS_SERVER_PORT: ${NOTIFICATIONS_SERVER_PORT}
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
     depends_on:
-      - postgres-db
-      - eureka-service-discovery
+      configserver:
+        condition: service_healthy
+      eureka-service-discovery:
+        condition: service_healthy
+      postgres-db:
+        condition: service_healthy
     networks:
       - postgres_network
-
 
   postgres-db:
     image: postgres
@@ -42,6 +71,11 @@ services:
       - "5433:5432"
     volumes:
       - .pg-oper-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATASOURCE_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       postgres_network:
 

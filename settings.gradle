@@ -1,0 +1,5 @@
+rootProject.name = 'yaBank'
+include 'configServerService'
+include 'eurekaServiceDiscovery'
+include 'notificationsApplication'
+
