@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: eurekaServiceDiscovery
+server:
+  port: ${EUREKA_SERVER_PORT:8761}
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
