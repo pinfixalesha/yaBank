@@ -32,3 +32,10 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   remarks: "Сообщение"
+              - column:
+                  name: datetime_create
+                  type: timestamp
+                  constraints:
+                    nullable: false
+                  remarks: "Дата и время сообщения"
+
