@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create-notification-schema
-      author: your_name
+      author: Pinyaev Aleksey
       changes:
         - sql:
             sql: "CREATE SCHEMA IF NOT EXISTS notification;"

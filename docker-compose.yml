@@ -59,6 +59,49 @@ services:
     networks:
       - postgres_network
 
+  accounts-application:
+    build:
+      context: ./accountsApplication
+      dockerfile: Dockerfile
+    ports:
+      - "${ACCOUNTS_SERVER_PORT}:${ACCOUNTS_SERVER_PORT}"
+    environment:
+      DATASOURCE_URL: ${DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      ACCOUNTS_SERVER_PORT: ${ACCOUNTS_SERVER_PORT}
+      EUREKA_ZONE: ${EUREKA_ZONE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka-service-discovery:
+        condition: service_healthy
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - postgres_network
+
+  bank-ui-application:
+    build:
+      context: ./bankUIApplication
+      dockerfile: Dockerfile
+    ports:
+      - "${BANK_UI_SERVER_PORT}:${BANK_UI_SERVER_PORT}"
+    environment:
+      BANK_UI_SERVER_PORT: ${BANK_UI_SERVER_PORT}
+      EUREKA_ZONE: ${EUREKA_ZONE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka-service-discovery:
+        condition: service_healthy
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - postgres_network
+
   postgres-db:
     image: postgres
     container_name: postgres-db

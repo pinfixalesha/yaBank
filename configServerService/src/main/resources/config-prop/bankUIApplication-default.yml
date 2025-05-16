@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: bankUIApplication
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    initialization-mode: never
+    enabled: false
+  liquibase:
+    enabled: false
+
+server:
+  port: ${BANK_UI_SERVER_PORT}
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_ZONE}
+
+logging:
+  level:
+    liquibase: DEBUG

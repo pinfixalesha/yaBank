@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: yaBank tables notification
+      author: Pinayev Aleksey
+      changes:
+        - createTable:
+            schemaName: account
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                  remarks: Идентификатор пользователя, которому принадлежит счет
+              - column:
+                  name: account_number
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+                  remarks: Номер счета
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+                  remarks: Валюта счета (например, USD, EUR)
+              - column:
+                  name: balance
+                  type: decimal(19, 2)
+                  constraints:
+                    nullable: false
+                  remarks: Баланс счета
+              - column:
+                  name: datetime_create
+                  type: timestamp
+                  constraints:
+                    nullable: false
+                  remarks: Дата Время создания счета
+              - column:
+                  name: datetime_update
+                  type: timestamp
+                  remarks: Дата Время последнего движения счета
+              - column:
+                  name: datetime_delete
+                  type: timestamp
+                  remarks: Дата Время удаления счета

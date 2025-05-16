@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-accounts-schema
+      author: Pinyaev Aleksey
+      changes:
+        - sql:
+            sql: "CREATE SCHEMA IF NOT EXISTS account;"
+      runAlways: false
+      runOnChange: false
+  - include:
+      file: db/changelog/tables/users.yaml
+  - include:
+      file: db/changelog/tables/accounts.yaml

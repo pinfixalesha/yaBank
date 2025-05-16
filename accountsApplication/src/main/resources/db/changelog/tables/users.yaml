@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: yaBank users notification
+      author: Pinayev Aleksey
+      changes:
+        - createTable:
+            schemaName: account
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: login
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: Логин пользователя (уникальный)
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: Хэшированный пароль пользователя
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: Имя пользователя
+              - column:
+                  name: lastName
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                  remarks: Фамилия пользователя
+              - column:
+                  name: middleName
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+                  remarks: Отчество пользователя (опционально)
+              - column:
+                  name: dateOfBirth
+                  type: DATE
+                  constraints:
+                    nullable: false
+                  remarks: Дата рождения пользователя
+              - column:
+                  name: datetime_create
+                  type: timestamp
+                  constraints:
+                    nullable: false
+                  remarks: Дата Время создания записи

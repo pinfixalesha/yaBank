@@ -2,4 +2,6 @@ rootProject.name = 'yaBank'
 include 'configServerService'
 include 'eurekaServiceDiscovery'
 include 'notificationsApplication'
+include 'accountsApplication'
+include 'bankUIApplication'
 

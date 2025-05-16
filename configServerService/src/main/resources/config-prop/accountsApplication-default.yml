@@ -1,10 +1,10 @@
 spring:
   application:
-    name: notificationsApplication
+    name: accountsApplication
   datasource:
-    url: jdbc:postgresql://localhost:5433/yaBank
-    username: yaBank
-    password: 12345
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -12,15 +12,18 @@ spring:
     show-sql: true
   liquibase:
     enabled: true
+  cloud:
+    config:
+      enabled: false
 
 server:
-  port: 8081
+  port: ${ACCOUNTS_SERVER_PORT}
 eureka:
   instance:
     prefer-ip-address: true
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_ZONE}
 
 logging:
   level:

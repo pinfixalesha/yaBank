@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: bankUIApplication
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    initialization-mode: never
+    enabled: false
+  liquibase:
+    enabled: false
+
+server:
+  port: 8080
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

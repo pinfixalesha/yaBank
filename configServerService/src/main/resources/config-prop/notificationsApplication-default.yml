@@ -19,6 +19,8 @@ spring:
 server:
   port: ${NOTIFICATIONS_SERVER_PORT}
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
     serviceUrl:
       defaultZone: ${EUREKA_ZONE}
