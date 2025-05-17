@@ -21,12 +21,6 @@ databaseChangeLog:
                     nullable: false
                   remarks: Идентификатор пользователя, которому принадлежит счет
               - column:
-                  name: account_number
-                  type: varchar(20)
-                  constraints:
-                    nullable: false
-                  remarks: Номер счета
-              - column:
                   name: currency
                   type: varchar(3)
                   constraints:

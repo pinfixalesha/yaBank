@@ -27,29 +27,22 @@ databaseChangeLog:
                     nullable: false
                   remarks: Хэшированный пароль пользователя
               - column:
-                  name: name
-                  type: varchar(255)
+                  name: fio
+                  type: varchar(512)
                   constraints:
                     nullable: false
-                  remarks: Имя пользователя
-              - column:
-                  name: lastName
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-                  remarks: Фамилия пользователя
-              - column:
-                  name: middleName
-                  type: varchar(255)
-                  constraints:
-                    nullable: true
-                  remarks: Отчество пользователя (опционально)
+                  remarks: Фамилия Имя
               - column:
                   name: dateOfBirth
                   type: DATE
                   constraints:
                     nullable: false
                   remarks: Дата рождения пользователя
+              - column:
+                  name: role
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
               - column:
                   name: datetime_create
                   type: timestamp

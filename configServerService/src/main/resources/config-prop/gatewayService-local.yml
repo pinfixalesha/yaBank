@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: gatewayService
+  cloud:
+    config:
+      enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: accountsApplication
+          uri: lb://accountsApplication
+          predicates:
+            - Path=/accountsApplication/**
+          filters:
+            - RewritePath=/accountsApplication/?(?<segment>.*), /$\{segment}
+        - id: notificationsApplication
+          uri: lb://notificationsApplication
+          predicates:
+            - Path=/notificationsApplication/**
+          filters:
+            - RewritePath=/notificationsApplication/?(?<segment>.*), /$\{segment}
+  datasource:
+    initialization-mode: never
+    enabled: false
+  liquibase:
+    enabled: false
+
+server:
+  port: 8084
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

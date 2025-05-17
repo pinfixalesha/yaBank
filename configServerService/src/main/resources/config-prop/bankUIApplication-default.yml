@@ -18,7 +18,3 @@ eureka:
   client:
     serviceUrl:
       defaultZone: ${EUREKA_ZONE}
-
-logging:
-  level:
-    liquibase: DEBUG

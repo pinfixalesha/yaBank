@@ -35,14 +35,11 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "fio", nullable = false)
+    private String fio;
 
-    @Column(name = "lastName", nullable = false)
-    private String lastName;
-
-    @Column(name = "middleName")
-    private String middleName;
+    @Column(name = "role", nullable = false)
+    private String role;
 
     @Column(name = "dateOfBirth", nullable = false)
     private LocalDate dateOfBirth;

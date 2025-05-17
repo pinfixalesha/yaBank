@@ -37,11 +37,8 @@ public class UserService {
         Optional.ofNullable(userDto.getLogin())
                 .orElseThrow(() -> new IllegalArgumentException("Не передан логин"));
 
-        Optional.ofNullable(userDto.getFirstName())
-                .orElseThrow(() -> new IllegalArgumentException("Не передано имя"));
-
-        Optional.ofNullable(userDto.getLastName())
-                .orElseThrow(() -> new IllegalArgumentException("Не передана фамилия"));
+        Optional.ofNullable(userDto.getFio())
+                .orElseThrow(() -> new IllegalArgumentException("Не передано ФИО"));
 
         Optional.ofNullable(userDto.getDateOfBirth())
                 .orElseThrow(() -> new IllegalArgumentException("Не передана дата рождения клиента"));

@@ -36,9 +36,6 @@ public class Account {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "account_number", nullable = false, length = 20)
-    private String accountNumber;
-
     @Column(name = "currency", nullable = false, length = 3)
     private String currency;
 

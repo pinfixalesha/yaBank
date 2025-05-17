@@ -4,4 +4,5 @@ include 'eurekaServiceDiscovery'
 include 'notificationsApplication'
 include 'accountsApplication'
 include 'bankUIApplication'
+include 'gatewayService'
 

@@ -18,9 +18,8 @@ public class UserMapper {
         return UserDto.builder()
                 .id(user.getId())
                 .login(user.getLogin())
-                .firstName(user.getName())
-                .lastName(user.getLastName())
-                .middleName(user.getMiddleName())
+                .role(user.getRole())
+                .fio(user.getFio())
                 .password(user.getPassword())
                 .dateOfBirth(user.getDateOfBirth().format(DateTimeUtils.DATE_TIME_FORMATTER))
                 .build();

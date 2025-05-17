@@ -42,6 +42,12 @@
         </td>
     </tr>
     <tr>
+        <td style="font-weight:bold;">E-Mail</td>
+        <td>
+            <input name="email" type="text" th:value="${email}" style="width:100%" required/>
+        </td>
+    </tr>
+    <tr>
         <td style="font-weight:bold;">Дата рождения </td>
         <td>
             <input name="dateOfBirth" type="date" th:value="${dateOfBirth}" style="width:100%" required/>
@@ -50,9 +56,6 @@
     <tr>
         <td style="text-align:right" colspan="2">
             <button type="submit">Зарегистрироваться</button>
-            <input type="hidden"
-                   th:name="_csrf"
-                   th:value="${_csrf.token}"/>
         </td>
     </tr>
 
