@@ -15,5 +15,4 @@ public class DefaultController {
         return "redirect:/main";
     }
 
-
 }

@@ -20,6 +20,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                     .requestMatchers("/signup").permitAll()
                     .requestMatchers("/login").permitAll()
+                    .requestMatchers("/logout").permitAll()
                     .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -27,6 +28,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
                         .permitAll()
                 );
         return http.build();

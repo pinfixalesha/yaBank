@@ -13,12 +13,14 @@ import java.util.Collections;
 @Builder
 public class UserDto implements UserDetails {
 
-    private Long id;
     private String login;
     private String password;
     private String fio;
     private String role;
+    private String email;
     private String dateOfBirth;
+    private String statusCode;
+    private String statusMessage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -53,10 +55,6 @@ public class UserDto implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public Long getCustomerId() {
-        return id;
     }
 
 }
