@@ -22,6 +22,12 @@ spring:
             - Path=/notificationsApplication/**
           filters:
             - RewritePath=/notificationsApplication/?(?<segment>.*), /$\{segment}
+        - id: blockerApplication
+          uri: lb://blockerApplication
+          predicates:
+            - Path=/blockerApplication/**
+          filters:
+            - RewritePath=/blockerApplication/?(?<segment>.*), /$\{segment}
   datasource:
     initialization-mode: never
     enabled: false
