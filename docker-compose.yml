@@ -49,6 +49,7 @@ services:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -72,6 +73,7 @@ services:
       ACCOUNTS_SERVER_PORT: ${ACCOUNTS_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -92,6 +94,7 @@ services:
       BANK_UI_SERVER_PORT: ${BANK_UI_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy

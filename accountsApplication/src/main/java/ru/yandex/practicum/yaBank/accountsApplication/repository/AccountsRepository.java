@@ -6,7 +6,7 @@ import ru.yandex.practicum.yaBank.accountsApplication.entities.Account;
 import java.util.List;
 
 public interface AccountsRepository extends JpaRepository<Account, Long> {
-    List<Account> findAllByUserId(String id);
+//    List<Account> findAllByUserId(String id);
 
-    Account findByUserIdAndCurrency(String userId, String currency);
+ //   Account findByUserIdAndCurrency(String userId, String currency);
 }

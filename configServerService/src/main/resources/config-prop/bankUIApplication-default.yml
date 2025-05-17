@@ -18,3 +18,5 @@ eureka:
   client:
     serviceUrl:
       defaultZone: ${EUREKA_ZONE}
+ya-bank:
+  gateway: ${GATEWAY_SERVER_URL}

@@ -1,18 +1,25 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.configurations;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
-
 @Configuration
-public class AccountsApplicationConfig {
+public class GateWayConfig {
 
-    static private String ACCOUNT_PATH="http://gateway/accountsApplication";
+    @Value("${ya-bank.gateway}")
+    private String gatewayUrl;
+
+    static private String ACCOUNT_APPLICATION = "accountsapplication";
 
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
 
+    @Bean
+    public String gatewayUrl() {
+        return gatewayUrl;
+    }
 }

@@ -18,3 +18,5 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+ya-bank:
+  gateway: http://localhost:8084/

@@ -38,10 +38,13 @@ public class User {
     @Column(name = "fio", nullable = false)
     private String fio;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "dateOfBirth", nullable = false)
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
     @Column(name = "datetime_create", nullable = false)

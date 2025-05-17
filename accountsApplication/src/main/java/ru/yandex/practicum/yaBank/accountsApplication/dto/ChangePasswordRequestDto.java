@@ -5,11 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UserDto {
-    private Long id;
+public class ChangePasswordRequestDto {
     private String login;
     private String password;
-    private String fio;
-    private String role;
-    private String dateOfBirth;
 }
