@@ -44,11 +44,4 @@ public class Account {
 
     @Column(name = "datetime_create", nullable = false)
     private LocalDateTime datetimeCreate;
-
-    @Column(name = "datetime_update")
-    private LocalDateTime datetimeUpdate;
-
-    @Column(name = "datetime_delete")
-    private LocalDateTime datetimeDelete;
-
 }

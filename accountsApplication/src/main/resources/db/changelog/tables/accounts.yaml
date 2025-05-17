@@ -38,11 +38,3 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   remarks: Дата Время создания счета
-              - column:
-                  name: datetime_update
-                  type: timestamp
-                  remarks: Дата Время последнего движения счета
-              - column:
-                  name: datetime_delete
-                  type: timestamp
-                  remarks: Дата Время удаления счета
