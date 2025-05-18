@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: yaBank tables exchange
+      author: Pinayev Aleksey
+      changes:
+        - createTable:
+            schemaName: exchange
+            tableName: rates
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  constraints:
+                    nullable: false
+                  remarks: "Валюта"
+              - column:
+                  name: buy
+                  type: decimal(19, 2)
+                  constraints:
+                    nullable: false
+                  remarks: Курс покупки
+              - column:
+                  name: sale
+                  type: decimal(19, 2)
+                  constraints:
+                    nullable: false
+                  remarks: Курс продажи

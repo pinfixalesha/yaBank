@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-exchange-schema
+      author: Pinyaev Aleksey
+      changes:
+        - sql:
+            sql: "CREATE SCHEMA IF NOT EXISTS exchange;"
+      runAlways: false
+      runOnChange: false
+  - include:
+      file: db/changelog/tables/exchange.yaml

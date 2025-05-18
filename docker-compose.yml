@@ -125,6 +125,26 @@ services:
     networks:
       - postgres_network
 
+  exchange-application:
+    build:
+      context: ./exchangeApplication
+      dockerfile: Dockerfile
+    ports:
+      - "${EXCHANGE_SERVER_PORT}:${EXCHANGE_SERVER_PORT}"
+    environment:
+      EXCHANGE_SERVER_PORT: ${EXCHANGE_SERVER_PORT}
+      EUREKA_ZONE: ${EUREKA_ZONE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+    depends_on:
+      configserver:
+        condition: service_healthy
+      eureka-service-discovery:
+        condition: service_healthy
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - postgres_network
+
   gateway-service:
     build:
       context: ./bankUIApplication

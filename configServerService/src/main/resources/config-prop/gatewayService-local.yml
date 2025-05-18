@@ -28,6 +28,12 @@ spring:
             - Path=/blockerApplication/**
           filters:
             - RewritePath=/blockerApplication/?(?<segment>.*), /$\{segment}
+        - id: exchangeApplication
+          uri: lb://exchangeApplication
+          predicates:
+            - Path=/exchangeApplication/**
+          filters:
+            - RewritePath=/exchangeApplication/?(?<segment>.*), /$\{segment}
   datasource:
     initialization-mode: never
     enabled: false

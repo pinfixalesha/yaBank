@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: exchangeApplication
+  datasource:
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    enabled: true
+  cloud:
+    config:
+      enabled: false
+
+server:
+  port: ${EXCHANGE_SERVER_PORT}
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_ZONE}
+ya-bank:
+  gateway: ${GATEWAY_SERVER_URL}
+logging:
+  level:
+    liquibase: DEBUG
