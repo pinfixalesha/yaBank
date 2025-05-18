@@ -1,5 +1,6 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,13 +8,24 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.CurrencyDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
+import ru.yandex.practicum.yaBank.bankUIApplication.mapping.CurrencyMapper;
+import ru.yandex.practicum.yaBank.bankUIApplication.model.CurrencyModel;
+import ru.yandex.practicum.yaBank.bankUIApplication.service.ExchangeApplicationService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping
 public class MainController {
+
+    @Autowired
+    private ExchangeApplicationService exchangeApplicationService;
+
+    @Autowired
+    private CurrencyMapper currencyMapper;
 
     @GetMapping("/main")
     @Secured("ROLE_USER")
@@ -23,6 +35,15 @@ public class MainController {
         model.addAttribute("login", currentUser.getLogin());
         model.addAttribute("name", currentUser.getFio());
         model.addAttribute("birthdate", currentUser.getDateOfBirth());
+
+        List<CurrencyDto> currencyDtos = exchangeApplicationService.getCurrency();
+
+        List<CurrencyModel> currencyModels = currencyDtos.stream()
+                .map(currencyMapper::toModel)
+                .collect(Collectors.toList());
+
+        model.addAttribute("currencies", currencyModels);
+
         /*
         // Пример валют
          model.addAttribute("currencies", List.of(

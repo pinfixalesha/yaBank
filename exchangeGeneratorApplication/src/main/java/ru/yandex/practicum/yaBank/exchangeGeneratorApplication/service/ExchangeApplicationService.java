@@ -21,7 +21,7 @@ public class ExchangeApplicationService {
     private RestClient restClient;
 
     @Autowired
-    private String blockerApplicationUrl;
+    private String exchangeApplicationUrl;
 
     @Retryable(
         value = {ResourceAccessException.class}, // Повторять при ошибках соединения
@@ -31,7 +31,7 @@ public class ExchangeApplicationService {
     public HttpResponseDto sendRates(List<CurrencyRateDto> currencyRateDtos) {
         try {
             return restClient.post()
-                    .uri(blockerApplicationUrl)
+                    .uri(exchangeApplicationUrl)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .body(currencyRateDtos)
                     .retrieve()

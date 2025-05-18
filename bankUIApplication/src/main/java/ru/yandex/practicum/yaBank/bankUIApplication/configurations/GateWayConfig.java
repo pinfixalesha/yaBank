@@ -17,6 +17,8 @@ public class GateWayConfig {
 
     static private String BLOCKER_APPLICATION = "blockerapplication";
 
+    static private String EXCHANGE_APPLICATION = "exchangeApplication";
+
     @Bean
     public RestClient restClient() {
         return RestClient.create();
@@ -30,6 +32,11 @@ public class GateWayConfig {
     @Bean
     public String blockerApplicationUrl() {
         return gatewayUrl + "/" + BLOCKER_APPLICATION + "/blocker";
+    }
+
+    @Bean
+    public String exchangeApplicationUrl() {
+        return gatewayUrl + "/" + EXCHANGE_APPLICATION +"/exchange";
     }
 
 }
