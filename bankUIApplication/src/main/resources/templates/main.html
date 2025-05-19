@@ -89,8 +89,8 @@
                         </td>
                     </tr>
                     <tr th:each="account : ${accounts}">
-                        <td style="font-weight:bold;" th:text="${account.getCurrency().getTitle()}"/>
-                        <td th:text="${('Счёт № ' + account.getAccountNumber() + ': ' + account.getBalance()+' '+account.getCurrency().getName())}"/>
+                        <td style="font-weight:bold;" th:text="${account.getCurrencyTitle()}"/>
+                        <td th:text="${('Счёт № ' + account.getAccountNumber() + ': ' + account.getBalance())}"/>
                     </tr>
                     <tr>
                         <td/>
@@ -102,6 +102,14 @@
                 </table>
             </form>
             <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
+                <tr th:if="${accountErrors!=null}" th:each="accountErrors : ${accountErrors}">
+                    <td style="color:red;" th:text="${accountErrors}"/>
+                </tr>
+                <tr th:if="${accountIsOpen}">
+                    <td>
+                        <span style="color: green">Счет успешно открыт</span>
+                    </td>
+                </tr>
                 <tr>
                     <form method="post" th:action="${'/user/'+login+'/accounts'}">
                         <div>

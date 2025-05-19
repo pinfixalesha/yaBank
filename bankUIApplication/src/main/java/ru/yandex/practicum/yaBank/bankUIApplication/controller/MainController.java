@@ -8,10 +8,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.CurrencyDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
+import ru.yandex.practicum.yaBank.bankUIApplication.mapping.AccountMapper;
 import ru.yandex.practicum.yaBank.bankUIApplication.mapping.CurrencyMapper;
+import ru.yandex.practicum.yaBank.bankUIApplication.model.AccountModel;
 import ru.yandex.practicum.yaBank.bankUIApplication.model.CurrencyModel;
+import ru.yandex.practicum.yaBank.bankUIApplication.service.AccountApplicationService;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.ExchangeApplicationService;
 
 import java.util.List;
@@ -25,7 +29,13 @@ public class MainController {
     private ExchangeApplicationService exchangeApplicationService;
 
     @Autowired
+    private AccountApplicationService accountApplicationService;
+
+    @Autowired
     private CurrencyMapper currencyMapper;
+
+    @Autowired
+    private AccountMapper accountMapper;
 
     @GetMapping("/main")
     @Secured("ROLE_USER")
@@ -37,41 +47,28 @@ public class MainController {
         model.addAttribute("birthdate", currentUser.getDateOfBirth());
 
         List<CurrencyDto> currencyDtos = exchangeApplicationService.getCurrency();
-
         List<CurrencyModel> currencyModels = currencyDtos.stream()
                 .map(currencyMapper::toModel)
                 .collect(Collectors.toList());
-
         model.addAttribute("currencies", currencyModels);
 
-        /*
-        // Пример валют
-         model.addAttribute("currencies", List.of(
-                new Currency("RUB", "Российский рубль"),
-                new Currency("USD", "Доллар США"),
-                new Currency("EUR", "Евро")
-        ));
+        List<AccountDto> accountDtos = accountApplicationService.getUserAccountInfo(currentUser.getLogin());
+        List<AccountModel> accountModels = accountDtos.stream()
+                .map(accountDto -> accountMapper.toModel(accountDto, currencyDtos))
+                .collect(Collectors.toList());
+        model.addAttribute("accounts", accountModels);
 
-        // Пример счетов пользователя
-        model.addAttribute("accounts", List.of(
-                new Account("RUB", "Счет №1", 10000),
-                new Account("USD", "Счет №2", 500)
-        ));
-        */
         return "main";
     }
 
 
     private UserDto getCurrentUser() {
-        // Получаем объект аутентификации из SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Предполагается, что объект UserDetails хранится в аутентификации
         if (authentication != null && authentication.getPrincipal() instanceof UserDto) {
             return (UserDto) authentication.getPrincipal();
         }
 
-        // Если пользователь не аутентифицирован, возвращаем заглушку
         return UserDto.builder()
                 .login("guest")
                 .password("password")

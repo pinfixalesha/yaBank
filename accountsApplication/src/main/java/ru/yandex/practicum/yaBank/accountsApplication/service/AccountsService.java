@@ -14,6 +14,7 @@ import ru.yandex.practicum.yaBank.accountsApplication.repository.UsersRepository
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +31,8 @@ public class AccountsService {
 
     @Autowired
     private AccountMapper accountMapper;
+
+    private static final Random random = new Random();
 
     public Long addAccount(AccountRequestDto accountRequestDto) {
         User user = usersRepository.findUserByLogin(accountRequestDto.getLogin()).orElse(null);
@@ -48,12 +51,25 @@ public class AccountsService {
         var account = new Account();
         account.setBalance(BigDecimal.ZERO);
         account.setCurrency(accountRequestDto.getCurrency());
+        account.setNumber(generateAccountNumber(accountRequestDto.getCurrency()));
         account.setDatetimeCreate(LocalDateTime.now());
         account.setUser(user);
         Account savedAccount=accountsRepository.save(account);
 
         notificationService.sendNotification(user.getEmail(),"Новый счет у пользователя успешно зарегистрирован");
         return savedAccount.getId();
+    }
+
+    public static String generateAccountNumber(String currencyCode) {
+        int firstPart = 40215;
+
+        int remainingLength = 20 - 5 - currencyCode.length();
+        StringBuilder remainingPart = new StringBuilder();
+        for (int i = 0; i < remainingLength; i++) {
+            remainingPart.append(random.nextInt(10)); // Случайная цифра от 0 до 9
+        }
+
+        return firstPart + currencyCode + remainingPart;
     }
 
     public void cashIn(AccountOperationDto accountOperationDto) {

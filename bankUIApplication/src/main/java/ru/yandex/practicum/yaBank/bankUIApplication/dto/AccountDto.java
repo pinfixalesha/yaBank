@@ -1,4 +1,4 @@
-package ru.yandex.practicum.yaBank.accountsApplication.dto;
+package ru.yandex.practicum.yaBank.bankUIApplication.dto;
 
 import lombok.Builder;
 import lombok.Data;

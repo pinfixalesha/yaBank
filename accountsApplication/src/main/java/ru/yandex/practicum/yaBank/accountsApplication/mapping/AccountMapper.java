@@ -17,6 +17,7 @@ public class AccountMapper {
 
         return AccountDto.builder()
                 .balance(account.getBalance().doubleValue())
+                .accountNumber(account.getNumber())
                 .currency(account.getCurrency())
                 .build();
     }

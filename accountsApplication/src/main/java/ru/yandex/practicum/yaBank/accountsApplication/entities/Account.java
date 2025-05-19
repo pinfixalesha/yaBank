@@ -39,6 +39,9 @@ public class Account {
     @Column(name = "currency", nullable = false, length = 3)
     private String currency;
 
+    @Column(name = "number", nullable = false, length = 20)
+    private String number;
+
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
 

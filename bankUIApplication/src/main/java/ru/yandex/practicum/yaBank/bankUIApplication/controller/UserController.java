@@ -1,6 +1,7 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountRequestDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.ChangePasswordRequestDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.HttpResponseDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
@@ -111,4 +113,29 @@ public class UserController {
 
         return null;
     }
+
+    @PostMapping("/{login}/accounts")
+    @Secured("ROLE_USER")
+    public String openAccount(
+            @PathVariable String login,
+            @RequestParam String currency,
+            Model model,
+            Principal principal) {
+
+        AccountRequestDto requestDto = new AccountRequestDto();
+        requestDto.setCurrency(currency);
+        requestDto.setLogin(login);
+
+        HttpResponseDto httpResponseDto = accountApplicationService.accountAdd(requestDto);
+
+        if (httpResponseDto.getStatusCode().equals("0")) {
+            model.addAttribute("accountIsOpen", true);
+        } else {
+            model.addAttribute("accountErrors",
+                    List.of("Ошибка при создании счета " + httpResponseDto.getStatusMessage()));
+        }
+        return mainController.mainPage(model);
+    }
+
+
 }
