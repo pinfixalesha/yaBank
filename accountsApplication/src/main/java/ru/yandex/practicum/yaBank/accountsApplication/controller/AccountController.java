@@ -2,6 +2,7 @@ package ru.yandex.practicum.yaBank.accountsApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,7 @@ public class AccountController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured("SCOPE_accounts.write")
     public HttpResponseDto createAccount(@RequestBody AccountRequestDto accountRequestDto) {
         Long accountId = accountsService.addAccount(accountRequestDto);
         return HttpResponseDto.builder()
@@ -46,6 +48,7 @@ public class AccountController {
     }
 
     @PutMapping("/cashIn")
+    @Secured("SCOPE_accounts.write")
     public HttpResponseDto cashInOperation(@RequestBody AccountOperationDto accountOperationDto) {
         accountsService.cashIn(accountOperationDto);
         return HttpResponseDto.builder()
@@ -55,6 +58,7 @@ public class AccountController {
     }
 
     @PutMapping("/cashOut")
+    @Secured("SCOPE_accounts.write")
     public HttpResponseDto cashOutOperation(@RequestBody AccountOperationDto accountOperationDto) {
         accountsService.cashOut(accountOperationDto);
         return HttpResponseDto.builder()
@@ -64,11 +68,13 @@ public class AccountController {
     }
 
     @GetMapping("/all")
+    @Secured("SCOPE_accounts.read")
     public List<AccountDto> getAccountsByUsername(@RequestParam("login") String login) {
         return accountsService.findAccountsByLogin(login);
     }
 
     @GetMapping("/get")
+    @Secured("SCOPE_accounts.read")
     public AccountDto getAccountInfo(@RequestParam("currency") String currency, @RequestParam("login") String login) {
         return accountsService.findAccountByLoginAndCurrency(login, currency);
     }

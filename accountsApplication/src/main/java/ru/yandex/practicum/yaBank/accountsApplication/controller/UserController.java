@@ -2,6 +2,7 @@ package ru.yandex.practicum.yaBank.accountsApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class UserController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured("SCOPE_accounts.write")
     public HttpResponseDto createUser(@RequestBody UserRequestDto userRequestDto) {
         Long userId = userService.createUser(userRequestDto);
         return HttpResponseDto.builder()
@@ -37,6 +39,7 @@ public class UserController {
     }
 
     @PostMapping("/changepassword")
+    @Secured("SCOPE_accounts.write")
     @ResponseStatus(HttpStatus.OK)
     public HttpResponseDto chengePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
         userService.chengePassword(changePasswordRequestDto);
@@ -47,6 +50,7 @@ public class UserController {
     }
 
     @PostMapping("/edit")
+    @Secured("SCOPE_accounts.write")
     @ResponseStatus(HttpStatus.CREATED)
     public HttpResponseDto editUser(@RequestBody UserRequestDto userRequestDto) {
         Long userId = userService.editUser(userRequestDto);
@@ -57,6 +61,7 @@ public class UserController {
     }
 
     @GetMapping("/findbylogin")
+    @Secured("SCOPE_accounts.read")
     public UserResponseDto findByUsername(@RequestParam("login") String login) {
         UserResponseDto userResponseDto= userService.findByUsername(login);
         if (userResponseDto==null) {
@@ -72,6 +77,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @Secured("SCOPE_accounts.read")
     public List<UserListResponseDto> getUsers() {
         return userService.findAll();
     }

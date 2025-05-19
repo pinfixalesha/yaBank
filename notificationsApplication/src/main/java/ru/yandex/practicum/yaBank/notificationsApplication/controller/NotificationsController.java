@@ -2,6 +2,7 @@ package ru.yandex.practicum.yaBank.notificationsApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ public class NotificationsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Secured("SCOPE_notifications.write")
     public HttpResponseDto createNotification(@RequestBody NotificationDto notification) {
         Long notificationId = notificationsService.sendNotification(notification);
         return HttpResponseDto.builder()

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.yaBank.blockerApplication.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ public class BlockerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
+    @Secured("SCOPE_blocker.read")
     public HttpResponseDto checkBlocker(@RequestBody BlockerDto blockerDto) {
         Random random = new Random();
         if (random.nextInt(100)>90) {

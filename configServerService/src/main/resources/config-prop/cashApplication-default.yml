@@ -20,7 +20,7 @@ spring:
             client-id: cash-service
             client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
             authorization-grant-type: client_credentials
-            scope: accounts.read, blocker.read, notifications.write
+            scope: accounts.read,blocker.read,notifications.write
         provider:
           keycloak:
             token-uri: ${KEYCLOAK_TOKEN_URL}
