@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.CurrencyDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserListResponseDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.mapping.AccountMapper;
 import ru.yandex.practicum.yaBank.bankUIApplication.mapping.CurrencyMapper;
+import ru.yandex.practicum.yaBank.bankUIApplication.mapping.UserMapper;
 import ru.yandex.practicum.yaBank.bankUIApplication.model.AccountModel;
 import ru.yandex.practicum.yaBank.bankUIApplication.model.CurrencyModel;
+import ru.yandex.practicum.yaBank.bankUIApplication.model.UserModel;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.AccountApplicationService;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.ExchangeApplicationService;
 
@@ -37,6 +40,9 @@ public class MainController {
     @Autowired
     private AccountMapper accountMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @GetMapping("/main")
     @Secured("ROLE_USER")
     public String mainPage(Model model) {
@@ -57,6 +63,12 @@ public class MainController {
                 .map(accountDto -> accountMapper.toModel(accountDto, currencyDtos))
                 .collect(Collectors.toList());
         model.addAttribute("accounts", accountModels);
+
+        List<UserListResponseDto> userListResponseDtos = accountApplicationService.getAllUsers();
+        List<UserModel> usersModels = userListResponseDtos.stream()
+                .map(userMapper::toModel)
+                .collect(Collectors.toList());
+        model.addAttribute("users", usersModels);
 
         return "main";
     }

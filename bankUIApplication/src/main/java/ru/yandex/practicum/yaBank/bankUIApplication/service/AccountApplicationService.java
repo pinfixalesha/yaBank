@@ -16,6 +16,7 @@ import ru.yandex.practicum.yaBank.bankUIApplication.dto.ChangePasswordRequestDto
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.CurrencyRateDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.HttpResponseDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserListResponseDto;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,6 +74,23 @@ public class AccountApplicationService {
                     .statusCode("500")
                     .statusMessage("Не удалось получить данные клиента. Причина: " + e.getMessage())
                     .build();
+        }
+    }
+
+    @Retryable(
+            value = {ResourceAccessException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000)
+    )
+    public List<UserListResponseDto> getAllUsers() {
+        try {
+            return restClient.get()
+                    .uri(accountApplicationUrl+"/user/all")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .retrieve()
+                    .body(new ParameterizedTypeReference<List<UserListResponseDto>>() {});
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
     }
 
