@@ -19,8 +19,6 @@ spring:
           service-client:
             client-id: transfer-service
             client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
-            authorization-grant-type: client_credentials
-            scope: accounts.read,exchange.read,blocker.read,notifications.write
         provider:
           keycloak:
             token-uri: ${KEYCLOAK_TOKEN_URL}

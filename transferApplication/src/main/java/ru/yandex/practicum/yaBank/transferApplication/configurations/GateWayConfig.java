@@ -27,9 +27,6 @@ public class GateWayConfig {
     @Value("${spring.security.oauth2.client.registration.service-client.client-secret}")
     private String clientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.service-client.scope}")
-    private String scope;
-
     @Value("${spring.security.oauth2.client.provider.keycloak.token-uri}")
     private String tokenUri;
 
@@ -68,7 +65,7 @@ public class GateWayConfig {
                 .clientSecret(clientSecret)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .tokenUri(tokenUri)
-                .scope(scope)
+                .scope("accounts.read","exchange.read","blocker.read","notifications.write")
                 .build();
         return new InMemoryClientRegistrationRepository(keycloakClient);
     }
