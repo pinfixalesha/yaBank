@@ -69,3 +69,14 @@ git clone https://github.com/pinfixalesha/yaBank.git
    ```bash
    gradle test
    ```
+
+### Безопастность
+
+- В проекте реализована система аутентификации и авторизации с использованием Spring Security.
+- В качестве сервера авторизации OAuth 2.0 можно использовать Keycloak, любой другой, который можно установить локально, или самописный сервер авторизации OAuth 2.0 с использованием проекта Spring Security OAuth.
+
+- Авторизационный сервер KeyCloak http://localhost:8282/ для обмена с платежным сервисом
+  Данные для авторизации
+   - KEYCLOAK_ADMIN: admin
+   - KEYCLOAK_ADMIN_PASSWORD: adminpassword
+   - Настройка клиента KeyCloak: realm-config.json
