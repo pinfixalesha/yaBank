@@ -123,6 +123,7 @@ services:
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -148,6 +149,7 @@ services:
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -170,6 +172,7 @@ services:
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -192,6 +195,7 @@ services:
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -214,6 +218,7 @@ services:
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -226,7 +231,7 @@ services:
 
   gateway-service:
     build:
-      context: ./bankUIApplication
+      context: ./gatewayService
       dockerfile: Dockerfile
     ports:
       - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"

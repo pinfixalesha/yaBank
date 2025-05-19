@@ -1,6 +1,9 @@
 {
   "realm": "yabank",
   "enabled": true,
+  "attributes": {
+    "frontendUrl": "http://keycloak:8080"
+  },
   "clients": [
     {
       "clientId": "front-ui",
