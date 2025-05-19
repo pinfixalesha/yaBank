@@ -9,7 +9,21 @@ spring:
     enabled: false
   liquibase:
     enabled: false
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8282/realms/yabank
+      client:
+        registration:
+          service-client:
+            client-id: cash-service
+            client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            authorization-grant-type: client_credentials
+            scope: accounts.read, blocker.read, notifications.write
+        provider:
+          keycloak:
+            token-uri: http://localhost:8282/realms/yabank/protocol/openid-connect/token
 server:
   port: 8092
 eureka:

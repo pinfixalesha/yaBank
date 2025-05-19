@@ -50,6 +50,8 @@ services:
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -74,6 +76,8 @@ services:
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -95,6 +99,8 @@ services:
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -115,6 +121,8 @@ services:
       BLOCKER_SERVER_PORT: ${BLOCKER_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -132,9 +140,14 @@ services:
     ports:
       - "${EXCHANGE_SERVER_PORT}:${EXCHANGE_SERVER_PORT}"
     environment:
+      DATASOURCE_URL: ${DATASOURCE_URL}
+      DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
       EXCHANGE_SERVER_PORT: ${EXCHANGE_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -155,6 +168,8 @@ services:
       EXCHANGE_GENEGATOR_SERVER_PORT: ${EXCHANGE_GENEGATOR_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -175,6 +190,8 @@ services:
       CASH_SERVER_PORT: ${CASH_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -195,6 +212,8 @@ services:
       TRANSFER_SERVER_PORT: ${TRANSFER_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
+      KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -265,11 +284,14 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME: localhost
       KC_HTTP_ENABLED: "true"
+    volumes:
+      - ./realm-config.json:/opt/keycloak/data/import/realm-config.json
     ports:
       - "8282:8080" # Порт Keycloak изменен на 8282
     networks:
       - postgres_network
-    command: start-dev # Запуск в режиме разработки
+    command:
+      - start-dev --import-realm
 
 networks:
   postgres_network:

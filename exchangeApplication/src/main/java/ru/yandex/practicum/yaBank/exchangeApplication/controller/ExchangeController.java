@@ -1,6 +1,8 @@
 package ru.yandex.practicum.yaBank.exchangeApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,7 @@ public class ExchangeController {
     }
 
     @PostMapping("rates")
+    @Secured("SCOPE_exchange.write")
     public HttpResponseDto saveRates(@RequestBody List<CurrencyRateDto> currencyRateDtos) {
         ratesService.saveRates(currencyRateDtos);
         return HttpResponseDto.builder()
@@ -40,6 +43,7 @@ public class ExchangeController {
     }
 
     @GetMapping("rates")
+    @Secured("SCOPE_exchange.read")
     public List<CurrencyRateDto> getAllRates() {
         return ratesService.getAllRates();
     }

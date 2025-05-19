@@ -12,10 +12,11 @@ spring:
     show-sql: true
   liquibase:
     enabled: true
-  cloud:
-    config:
-      enabled: false
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URL}
 server:
   port: ${NOTIFICATIONS_SERVER_PORT}
 eureka:

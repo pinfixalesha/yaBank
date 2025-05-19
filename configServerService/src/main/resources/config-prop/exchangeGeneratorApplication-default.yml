@@ -9,7 +9,18 @@ spring:
     enabled: false
   liquibase:
     enabled: false
-
+  security:
+    oauth2:
+      client:
+        registration:
+          service-client:
+            client-id: exchange-generator-service
+            client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            authorization-grant-type: client_credentials
+            scope: exchange.write
+        provider:
+          keycloak:
+            token-uri: ${KEYCLOAK_TOKEN_URL}
 server:
   port: ${EXCHANGE_GENEGATOR_SERVER_PORT}
 eureka:

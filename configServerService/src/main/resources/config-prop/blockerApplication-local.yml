@@ -9,7 +9,11 @@ spring:
     enabled: false
   liquibase:
     enabled: false
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URL}
 server:
   port: 8085
 eureka:

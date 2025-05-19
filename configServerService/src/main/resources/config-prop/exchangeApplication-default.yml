@@ -15,7 +15,11 @@ spring:
   cloud:
     config:
       enabled: false
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URL}
 server:
   port: ${EXCHANGE_SERVER_PORT}
 eureka:
