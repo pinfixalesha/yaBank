@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountOperationDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountRequestDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.ChangePasswordRequestDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.HttpResponseDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.AccountApplicationService;
+import ru.yandex.practicum.yaBank.bankUIApplication.service.CashApplicationService;
 
 import java.security.Principal;
 import java.util.List;
@@ -27,6 +29,9 @@ public class UserController {
 
     @Autowired
     private AccountApplicationService accountApplicationService;
+
+    @Autowired
+    private CashApplicationService cashApplicationService;
 
     @Autowired
     private MainController mainController;
@@ -138,4 +143,37 @@ public class UserController {
     }
 
 
+    @PostMapping("/{login}/cash")
+    @Secured("ROLE_USER")
+    public String handleCashOperation(
+            @PathVariable String login,
+            @RequestParam String currency,
+            @RequestParam double value,
+            @RequestParam String action,
+            Model model) {
+
+        AccountOperationDto accountOperationDto = AccountOperationDto.builder()
+                .login(login)
+                .currency(currency)
+                .amount(value)
+                .build();
+
+        HttpResponseDto httpResponseDto;
+        if ("PUT".equalsIgnoreCase(action)) {
+            httpResponseDto = cashApplicationService.cashIn(accountOperationDto);
+        } else if ("GET".equalsIgnoreCase(action)) {
+            httpResponseDto = cashApplicationService.cashOut(accountOperationDto);
+        } else {
+            model.addAttribute("cashErrors", "Неверное действие: " + action);
+            return mainController.mainPage(model);
+        }
+
+        if (httpResponseDto.getStatusCode().equals("0")) {
+            model.addAttribute("cashIsOK", true);
+        } else {
+            model.addAttribute("cashErrors",
+                    List.of("Ошибка операции " + httpResponseDto.getStatusMessage()));
+        }
+        return mainController.mainPage(model);
+    }
 }

@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: cashApplication
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    initialization-mode: never
+    enabled: false
+  liquibase:
+    enabled: false
+
+server:
+  port: ${CASH_SERVER_PORT}
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_ZONE}
+ya-bank:
+  gateway: ${GATEWAY_SERVER_URL}

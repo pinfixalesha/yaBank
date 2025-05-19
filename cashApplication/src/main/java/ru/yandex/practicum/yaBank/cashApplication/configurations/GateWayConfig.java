@@ -1,11 +1,9 @@
-package ru.yandex.practicum.yaBank.bankUIApplication.configurations;
+package ru.yandex.practicum.yaBank.cashApplication.configurations;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
-import ru.yandex.practicum.yaBank.bankUIApplication.dto.BlockerDto;
 
 @Configuration
 public class GateWayConfig {
@@ -17,13 +15,16 @@ public class GateWayConfig {
 
     static private String BLOCKER_APPLICATION = "blockerapplication";
 
-    static private String EXCHANGE_APPLICATION = "exchangeApplication";
-
-    static private String CASH_APPLICATION = "cashApplication";
+    static private String NOTIFICATIONS_APPLICATION = "notificationsapplication";
 
     @Bean
     public RestClient restClient() {
         return RestClient.create();
+    }
+
+    @Bean
+    public String notificationsUrl() {
+        return gatewayUrl + "/" + NOTIFICATIONS_APPLICATION + "/notifications";
     }
 
     @Bean
@@ -34,16 +35,6 @@ public class GateWayConfig {
     @Bean
     public String blockerApplicationUrl() {
         return gatewayUrl + "/" + BLOCKER_APPLICATION + "/blocker";
-    }
-
-    @Bean
-    public String exchangeApplicationUrl() {
-        return gatewayUrl + "/" + EXCHANGE_APPLICATION +"/exchange";
-    }
-
-    @Bean
-    public String cashApplicationUrl() {
-        return gatewayUrl + "/" + CASH_APPLICATION;
     }
 
 }

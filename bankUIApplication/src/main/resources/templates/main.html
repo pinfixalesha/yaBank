@@ -133,6 +133,11 @@
                 <tr th:if="${cashErrors!=null}" th:each="cashError : ${cashErrors}">
                     <td style="color:red;" th:text="${cashError}"/>
                 </tr>
+                <tr th:if="${cashIsOK}">
+                    <td>
+                        <span style="color: green">Операция успешно выполнена</span>
+                    </td>
+                </tr>
                 <tr>
                     <td style="font-weight:bold;">Наличные</td>
                     <td>

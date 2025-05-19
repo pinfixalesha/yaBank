@@ -34,6 +34,12 @@ spring:
             - Path=/exchangeApplication/**
           filters:
             - RewritePath=/exchangeApplication/?(?<segment>.*), /$\{segment}
+        - id: cashApplication
+          uri: lb://cashApplication
+          predicates:
+            - Path=/cashApplication/**
+          filters:
+            - RewritePath=/cashApplication/?(?<segment>.*), /$\{segment}
   datasource:
     initialization-mode: never
     enabled: false
