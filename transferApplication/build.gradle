@@ -32,6 +32,11 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-config:4.2.1'
 	implementation 'org.springframework.retry:spring-retry:2.0.11'
 
+	// OAuth2 Client для интеграции с Keycloak
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	// Spring Boot OAuth2 Resource Server
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+	implementation 'org.springframework.security:spring-security-oauth2-jose'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
