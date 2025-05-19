@@ -43,13 +43,19 @@
 - PostgreSQL (если не используется Docker).
 - JDK 21 (если собирается проект локально).
 
-### Компиляция всех сервисов
+## Установка и запуск приложения
 
-1. Соберите приложение с помощью Gradle:
+1. Клонирование репозитория
+
+```bash
+git clone https://github.com/pinfixalesha/yaBank.git 
+```
+
+2. Соберите приложение с помощью Gradle:
    ```bash
    gradle build
    ```
-2. Запуск сервисов Docker Compose:
+3. Запуск сервисов Docker Compose:
    ```bash
    docker-compose up --build -d
    ```
