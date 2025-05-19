@@ -40,6 +40,12 @@ spring:
             - Path=/cashApplication/**
           filters:
             - RewritePath=/cashApplication/?(?<segment>.*), /$\{segment}
+        - id: transferApplication
+          uri: lb://transferApplication
+          predicates:
+            - Path=/transferApplication/**
+          filters:
+            - RewritePath=/transferApplication/?(?<segment>.*), /$\{segment}
   datasource:
     initialization-mode: never
     enabled: false

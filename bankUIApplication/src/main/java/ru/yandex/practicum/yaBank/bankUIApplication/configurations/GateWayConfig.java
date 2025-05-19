@@ -18,6 +18,8 @@ public class GateWayConfig {
 
     static private String CASH_APPLICATION = "cashApplication";
 
+    static private String TRANSFER_APPLICATION = "transferApplication";
+
     @Bean
     public RestClient restClient() {
         return RestClient.create();
@@ -36,6 +38,11 @@ public class GateWayConfig {
     @Bean
     public String cashApplicationUrl() {
         return gatewayUrl + "/" + CASH_APPLICATION;
+    }
+
+    @Bean
+    public String transferApplicationUrl() {
+        return gatewayUrl + "/" + TRANSFER_APPLICATION+"/transfer";
     }
 
 }

@@ -1,7 +1,6 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,9 +15,11 @@ import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountOperationDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.AccountRequestDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.ChangePasswordRequestDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.HttpResponseDto;
+import ru.yandex.practicum.yaBank.bankUIApplication.dto.TransferOperationDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.AccountApplicationService;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.CashApplicationService;
+import ru.yandex.practicum.yaBank.bankUIApplication.service.TransferApplicationService;
 
 import java.security.Principal;
 import java.util.List;
@@ -32,6 +33,9 @@ public class UserController {
 
     @Autowired
     private CashApplicationService cashApplicationService;
+
+    @Autowired
+    private TransferApplicationService transferApplicationService;
 
     @Autowired
     private MainController mainController;
@@ -176,4 +180,44 @@ public class UserController {
         }
         return mainController.mainPage(model);
     }
+
+    @PostMapping("/{login}/transfer")
+    @Secured("ROLE_USER")
+    public String handleTransferOperation(
+            @PathVariable String login,
+            @RequestParam(name = "from_currency" ) String fromCurrency,
+            @RequestParam(name = "to_currency") String toCurrency,
+            @RequestParam(name = "to_login") String toLogin,
+            @RequestParam double value,
+            Model model) {
+        // Подготовка DTO для перевода
+        TransferOperationDto transferOperationDto = TransferOperationDto.builder()
+                .fromLogin(login)
+                .toLogin(toLogin)
+                .fromCurrency(fromCurrency)
+                .toCurrency(toCurrency)
+                .amount(value)
+                .build();
+
+        HttpResponseDto httpResponseDto = transferApplicationService.transfer(transferOperationDto);
+
+        if ("0".equals(httpResponseDto.getStatusCode())) {
+            if (transferOperationDto.getToLogin().equals(transferOperationDto.getFromLogin())) {
+                model.addAttribute("transferIsOK", true);
+            } else {
+                model.addAttribute("transferOtherIsOK", true);
+            }
+        } else {
+            if (transferOperationDto.getToLogin().equals(transferOperationDto.getFromLogin())) {
+                model.addAttribute("transferErrors",
+                        List.of("Ошибка операции: " + httpResponseDto.getStatusMessage()));
+            } else {
+                model.addAttribute("transferOtherErrors",
+                        List.of("Ошибка операции: " + httpResponseDto.getStatusMessage()));
+            }
+        }
+
+        return mainController.mainPage(model);
+    }
+
 }
