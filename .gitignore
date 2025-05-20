@@ -17,6 +17,7 @@ build/
 .pg-oper-data
 .redis_data
 bin/
+lib/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 

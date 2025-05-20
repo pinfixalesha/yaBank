@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.4'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.cloud.contract' version '4.0.0'
 }
 
 group = 'ru.yandex.practicum'
@@ -14,6 +15,9 @@ java {
 }
 
 configurations {
+	testImplementation {
+		exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-config'
+	}
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
@@ -40,11 +44,23 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	//Тестирование
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.junit.jupiter:junit-jupiter-api'
-	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.mockito:mockito-core'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	testImplementation 'com.h2database:h2'
 
+	// Spring Cloud Contract Verifier (для генерации тестов контрактов)
+	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier:4.2.1'
+
+}
+
+contracts {
+	baseClassForTests = 'ru.yandex.practicum.yaBank.notificationsApplicationTest.BaseContractTest' // Указание базового класса для тестов
+	contractsDslDir = file("src/test/resources/contracts") // Путь к контрактам
+	testFramework = 'JUNIT5' // Использование JUnit 5
 }
 
 tasks.named('test') {
