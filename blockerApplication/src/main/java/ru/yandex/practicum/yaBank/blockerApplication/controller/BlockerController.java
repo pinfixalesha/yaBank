@@ -22,7 +22,7 @@ public class BlockerController {
     @Secured("SCOPE_blocker.read")
     public HttpResponseDto checkBlocker(@RequestBody BlockerDto blockerDto) {
         Random random = new Random();
-        if (random.nextInt(100)>90) {
+        if ((random.nextInt(100)>90)&&(!blockerDto.getCurrency().equals("XXX"))) {
             return HttpResponseDto.builder()
                     .statusMessage("Operation denied")
                     .statusCode("998")
