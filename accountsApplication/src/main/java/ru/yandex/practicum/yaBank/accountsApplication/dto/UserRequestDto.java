@@ -1,9 +1,10 @@
 package ru.yandex.practicum.yaBank.accountsApplication.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class UserRequestDto {
     private String login;
     private String password;

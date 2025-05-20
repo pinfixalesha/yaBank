@@ -36,7 +36,7 @@ public class RatesGenerationServiceUnitTest {
         ratesGenerationService.generateRates();
 
         HttpResponseDto mockResponse = HttpResponseDto.builder()
-                .statusCode("200")
+                .statusCode("0")
                 .statusMessage("Rates sent successfully")
                 .build();
 
