@@ -17,8 +17,18 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8282/realms/yabank
+      client:
+        registration:
+          service-client:
+            client-id: exchange-generator-service
+            client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+        provider:
+          keycloak:
+            token-uri: http://localhost:8282/realms/yabank/protocol/openid-connect/token
 eureka:
   client:
     enabled: false
 server:
   port: 8081
+ya-bank:
+  gateway: http://localhost:8084/
