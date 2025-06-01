@@ -55,7 +55,69 @@ git clone https://github.com/pinfixalesha/yaBank.git
    ```bash
    gradle build
    ```
-3. Запуск сервисов Docker Compose:
+4. Запуск Minikube (если ещё не запущен)
+   ```bash
+   minikube start
+   minikube status
+   ```
+5. Активируем Docker-окружение Minikube
+   ```bash
+   minikube docker-env >addenv.bat
+   addenv.bat
+   ```
+3. Сборка и загрузка Docker-образов в Minikube
+   ```bash
+   docker build -t exchange-generator-application:0.0.1-SNAPSHOT ./exchangeGeneratorApplication
+   docker build -t notifications-application:0.0.1-SNAPSHOT ./notificationsApplication
+   ```
+
+3) Проверка ingress
+   ```bash
+   kubectl get pods -n kube-system
+   ```
+4) Ingress
+   ```bash
+   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+   ```
+5) Проверка ingress
+   ```bash
+   kubectl get svc -n ingress-nginx
+   ```
+6) Обновление helm чартов
+   ```bash
+   cd ya-bank
+   helm dependency update .
+    ```
+Запуск
+helm install yabank ./
+
+
+Шаг 5. Проверьте, что сервис запущен и доступен внутри кластера
+kubectl get svc
+
+
+kubectl get pods
+
+Кол-во реплик
+kubectl get replicaset -l app=exchange-generator-application
+
+kubectl exec -it yabank-db-0 -- bash
+Вывод ключа пароля к БД
+kubectl get secret yabank-db -o jsonpath='{.data}'
+>'{"postgres-password":"VTdhSXVVN3EyZw=="}'
+>echo "VTdhSXVVN3EyZw==" | base64 --decode
+U7aIuU7q2g
+
+СУБД настройки не применяются без пересоздания PVC
+uninstall проекта найдите и удалите PVC:
+kubectl get pvc
+Затем удалите и затем install заново
+kubectl delete pvc data-yabank-db-0
+
+kubectl port-forward yabank-db-0 5432:5432
+
+   
+6. Запуск сервисов Docker Compose:
    ```bash
    docker-compose up --build -d
    ```

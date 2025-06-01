@@ -1,0 +1,57 @@
+apiVersion: v2
+name: ya-bank
+version: 0.1.0
+appVersion: "0.1.0"
+description: Зонтичный Helm чарт для yaBank
+type: application
+dependencies:
+  - name: exchange-generator-application
+    version: "0.1.0"
+    repository: "file://./charts/exchange-generator-application"
+  - name: notifications-application
+    version: "0.1.0"
+    repository: "file://./charts/notifications-application"
+  - name: postgresql   # Одну БД на все сервисы для экономии ресурсов компьютера
+    version: "14.2.3"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: db
+    condition: db.enabled
+#  - name: configserver
+#    version: 0.1.0
+#    repository: file://charts/configserver
+#  - name: eureka-service-discovery
+#    version: 0.1.0
+#    repository: file://charts/eureka-service-discovery
+#  - name: gateway-service
+#    version: 0.1.0
+#    repository: file://charts/gateway-service
+#  - name: notifications-application
+#    version: 0.1.0
+#    repository: file://charts/notifications-application
+#  - name: accounts-application
+#    version: 0.1.0
+#    repository: file://charts/accounts-application
+#  - name: bank-ui-application
+#    version: 0.1.0
+#    repository: file://charts/bank-ui-application
+#  - name: blocker-application
+#    version: 0.1.0
+#    repository: file://charts/blocker-application
+#  - name: exchange-application
+#    version: 0.1.0
+#    repository: file://charts/exchange-application
+#  - name: cash-application
+#    version: 0.1.0
+#    repository: file://charts/cash-application
+#  - name: transfer-application
+#    version: 0.1.0
+#    repository: file://charts/transfer-application
+#  - name: postgres-db
+#    version: 0.1.0
+#    repository: file://charts/postgres-db
+#  - name: redis
+#    version: 0.1.0
+#    repository: file://charts/redis
+#  - name: keycloak
+#    version: 0.1.0
+#    repository: file://charts/keycloak

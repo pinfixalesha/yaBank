@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "exchange-generator-application.fullname" . }}
+  labels:
+    {{- include "exchange-generator-application.labels" . | nindent 4 }}
+data:
+  application.yml: |  
+    spring:
+      application:
+        name: exchangeGeneratorApplication
+      cloud:
+        config:
+          enabled: false
+      datasource:
+        initialization-mode: never
+        enabled: false
+      liquibase:
+        enabled: false
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: exchange-generator-service
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: ${KEYCLOAK_TOKEN_URL}
+    server:
+      port: ${EXCHANGE_GENEGATOR_SERVER_PORT}
+    ya-bank:
+      gateway: ${GATEWAY_SERVER_URL}

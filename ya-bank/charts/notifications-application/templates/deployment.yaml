@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notifications-application
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: notifications-application
+  template:
+    metadata:
+      labels:
+        app: notifications-application
+    spec:
+      containers:
+        - name: notifications-application
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: DATASOURCE_URL
+              value: "{{ .Values.env.DATASOURCE_URL }}"
+            - name: DATASOURCE_USERNAME
+              value: "{{ .Values.env.DATASOURCE_USERNAME }}"
+            - name: DATASOURCE_PASSWORD
+              value: "{{ .Values.env.DATASOURCE_PASSWORD }}"
+            - name: NOTIFICATIONS_SERVER_PORT
+              value: "{{ .Values.env.NOTIFICATIONS_SERVER_PORT }}"
+            - name: EUREKA_ZONE
+              value: "{{ .Values.env.EUREKA_ZONE }}"
+            - name: CONFIG_SERVER_URL
+              value: "{{ .Values.env.CONFIG_SERVER_URL }}"
+            - name: GATEWAY_SERVER_URL
+              value: "{{ .Values.env.GATEWAY_SERVER_URL }}"
+            - name: KEYCLOAK_TOKEN_URL
+              value: "{{ .Values.env.KEYCLOAK_TOKEN_URL }}"
+            - name: KEYCLOAK_ISSUER_URL
+              value: "{{ .Values.env.KEYCLOAK_ISSUER_URL }}"
+            # Указывает Spring искать конфигурацию в /app/config/
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.config.database_username | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "notifications-application.fullname" . }}

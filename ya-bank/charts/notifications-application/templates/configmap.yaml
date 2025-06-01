@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "notifications-application.fullname" . }}
+  labels:
+    {{- include "notifications-application.labels" . | nindent 4 }}
+data:
+  application.yml: |
+    debug: true
+    spring:
+      application:
+        name: notificationsApplication
+      cloud:
+        config:
+          enabled: false      
+      datasource:
+        url: {{ tpl .Values.config.database_url . | quote }}
+        username: {{ .Values.config.database_username | quote }}
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: none
+        show-sql: true
+      liquibase:
+        enabled: true
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: ${KEYCLOAK_ISSUER_URL}
+    server:
+      port: ${NOTIFICATIONS_SERVER_PORT}
+    logging:
+      level:
+        liquibase: DEBUG    

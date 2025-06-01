@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: notifications-application
+                port:
+                  number: 8081
+          - path: /accounts
+            pathType: Prefix
+            backend:
+              service:
+                name: accounts-application
+                port:
+                  number: 8083

@@ -1,0 +1,6 @@
+dependencies:
+- name: exchange-generator-application
+  repository: file://./charts/exchange-generator-application
+  version: 0.1.0
+digest: sha256:cf8e782b60551b6af5cf6a2836a7a15eb0e0b9244baa6c31c545caea25307df6
+generated: "2025-06-01T12:16:34.2250667+03:00"
