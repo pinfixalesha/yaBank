@@ -18,25 +18,6 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
-            - name: DATASOURCE_URL
-              value: "{{ .Values.env.DATASOURCE_URL }}"
-            - name: DATASOURCE_USERNAME
-              value: "{{ .Values.env.DATASOURCE_USERNAME }}"
-            - name: DATASOURCE_PASSWORD
-              value: "{{ .Values.env.DATASOURCE_PASSWORD }}"
-            - name: NOTIFICATIONS_SERVER_PORT
-              value: "{{ .Values.env.NOTIFICATIONS_SERVER_PORT }}"
-            - name: EUREKA_ZONE
-              value: "{{ .Values.env.EUREKA_ZONE }}"
-            - name: CONFIG_SERVER_URL
-              value: "{{ .Values.env.CONFIG_SERVER_URL }}"
-            - name: GATEWAY_SERVER_URL
-              value: "{{ .Values.env.GATEWAY_SERVER_URL }}"
-            - name: KEYCLOAK_TOKEN_URL
-              value: "{{ .Values.env.KEYCLOAK_TOKEN_URL }}"
-            - name: KEYCLOAK_ISSUER_URL
-              value: "{{ .Values.env.KEYCLOAK_ISSUER_URL }}"
-            # Указывает Spring искать конфигурацию в /app/config/
             - name: SPRING_CONFIG_LOCATION
               value: file:///app/config/
             - name: SPRING_DATASOURCE_USERNAME

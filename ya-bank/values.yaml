@@ -16,15 +16,22 @@ exchange-generator-application:
     # -----------------------------
   service:
     type: ClusterIP
-    port: 8080
+    port: 8091
+  keycloak:
+    issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
+    token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   ingress:
     enabled: true
-    className: "nginx" # Specify your ingress controller class
+    className: "nginx"
+    annotations: {}
     hosts:
-      - host: exchange-generator-application.yabank.local # Use global domain or specific
+      - host: exchange-generator-application.yabank.local
         paths:
           - path: /
             pathType: ImplementationSpecific
+    tls: [ ]
+  gateway:
+    service_url: "http://exchange-application.{{ .Release.Namespace }}.svc.cluster.local:8087"
 
 notifications-application:
   replicaCount: 1
@@ -35,15 +42,20 @@ notifications-application:
     # -----------------------------
   service:
     type: ClusterIP
-    port: 8081 # Different port for order service
+    port: 8081
   ingress:
     enabled: true
     className: "nginx"
+    annotations: {}
     hosts:
       - host: notifications-application.yabank.local
         paths:
           - path: /
             pathType: ImplementationSpecific
+    tls: [ ]
+  keycloak:
+    issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
+    token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
@@ -62,11 +74,36 @@ db:
       enabled: true
       size: 1Gi # Small size for example
     pgHbaConfiguration: |
-      # Local connections without password (trust)
+      # Локальные соединения без пароля - для тестирования, не для прода
       local   all             all                                     trust
-      # Allow replication connections with md5 authentication
       host    replication     all                   127.0.0.1/32    md5
       host    replication     all                   ::1/128         md5
-      # All other connections use md5
       host    all             all                   0.0.0.0/0       md5
       host    all             all                   ::/0            md5
+
+keycloak:
+  enabled: true
+  auth:
+    adminUser: admin
+    adminPassword: adminpassword
+  httpRelativePath: "/"
+  hostname: localhost
+  production: false
+  tls:
+    enabled: false
+  service:
+    type: ClusterIP
+    ports:
+      http: 8080
+  extraArgs:
+    - --import-realm
+  extraVolumes:
+    - name: realm-config
+      configMap:
+        name: keycloak-realm-config
+  extraVolumeMounts:
+    - name: realm-config
+      mountPath: /opt/bitnami/keycloak/data/import
+  extraEnvVars:
+    - name: KEYCLOAK_EXTRA_ARGS
+      value: --import-realm

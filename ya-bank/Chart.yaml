@@ -16,6 +16,13 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     alias: db
     condition: db.enabled
+  - name: keycloak
+    version: "24.7.3"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: keycloak
+    condition: keycloak.enabled
+
+
 #  - name: configserver
 #    version: 0.1.0
 #    repository: file://charts/configserver

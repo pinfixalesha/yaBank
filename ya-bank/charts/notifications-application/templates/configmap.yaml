@@ -6,11 +6,12 @@ metadata:
     {{- include "notifications-application.labels" . | nindent 4 }}
 data:
   application.yml: |
-    debug: true
     spring:
       application:
         name: notificationsApplication
       cloud:
+        discovery:
+          enabled: false        
         config:
           enabled: false      
       datasource:
@@ -27,9 +28,12 @@ data:
         oauth2:
           resourceserver:
             jwt:
-              issuer-uri: ${KEYCLOAK_ISSUER_URL}
+              issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
     server:
-      port: ${NOTIFICATIONS_SERVER_PORT}
+      port: {{ .Values.service.port }}
+    eureka:
+      client:
+        enabled: false
     logging:
       level:
         liquibase: DEBUG    

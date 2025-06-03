@@ -3,33 +3,8 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.0.1-SNAPSHOT"
 
-service:
-  type: ClusterIP
-  port: 8081
-
-ingress:
-  enabled: true
-  className: "nginx"
-  annotations: {}
-  hosts:
-    - host: notifications-application.yabank.local
-      paths:
-        - path: /
-          pathType: Prefix
-  tls: []
-
-env:
-  NOTIFICATIONS_SERVER_PORT: 8081
-  CONFIG_SERVER_URL: http://configserver:8088/
-  GATEWAY_SERVER_URL: http://gateway-service:8084/
-  KEYCLOAK_TOKEN_URL: http://keycloak:8080/realms/yabank/protocol/openid-connect/token
-  KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/yabank
-
-
-
 replicaCount: 1
 resources: {}
-
 
 imagePullSecrets: []
 nameOverride: ""

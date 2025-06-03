@@ -1,0 +1,135 @@
+{
+  "realm": "yabank",
+  "enabled": true,
+  "attributes": {
+    "frontendUrl": "http://yabank-keycloak.default.svc.cluster.local:8080"
+  },
+  "clients": [
+    {
+      "clientId": "front-ui",
+      "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": [],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "authorizationServicesEnabled": true,
+      "defaultClientScopes": ["openid", "profile"],
+      "optionalClientScopes": ["accounts.write", "accounts.read", "cash.write", "transfer.write", "exchange.read"]
+    },
+    {
+      "clientId": "accounts-service",
+      "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+      "redirectUris": [],
+      "webOrigins": [],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "authorizationServicesEnabled": true,
+      "defaultClientScopes": ["openid", "profile"],
+      "optionalClientScopes": ["notifications.write"]
+    },
+    {
+      "clientId": "cash-service",
+      "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+      "redirectUris": [],
+      "webOrigins": [],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "authorizationServicesEnabled": true,
+      "defaultClientScopes": ["openid", "profile"],
+      "optionalClientScopes": ["accounts.read", "blocker.read", "notifications.write"]
+    },
+    {
+      "clientId": "transfer-service",
+      "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+      "redirectUris": [],
+      "webOrigins": [],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "authorizationServicesEnabled": true,
+      "defaultClientScopes": ["openid", "profile"],
+      "optionalClientScopes": ["accounts.read", "exchange.read", "blocker.read", "notifications.write"]
+    },
+    {
+      "clientId": "exchange-generator-service",
+      "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+      "redirectUris": [],
+      "webOrigins": [],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "authorizationServicesEnabled": true,
+      "defaultClientScopes": ["openid", "profile"],
+      "optionalClientScopes": ["exchange.write"]
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "accounts.read",
+      "description": "Read access to Accounts service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "accounts.write",
+      "description": "Write access to Accounts service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "cash.write",
+      "description": "Write access to Cash service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "transfer.write",
+      "description": "Write access to Transfer service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "exchange.read",
+      "description": "Read access to Exchange service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "exchange.write",
+      "description": "Write access to Exchange Generator service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "blocker.read",
+      "description": "Blocker service",
+      "protocol": "openid-connect"
+    },
+    {
+      "name": "notifications.write",
+      "description": "Notifications service",
+      "protocol": "openid-connect"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "adminpassword",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    }
+  ]
+}

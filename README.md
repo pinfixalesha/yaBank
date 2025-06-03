@@ -65,7 +65,11 @@ git clone https://github.com/pinfixalesha/yaBank.git
    minikube docker-env >addenv.bat
    addenv.bat
    ```
-3. Сборка и загрузка Docker-образов в Minikube
+3. Если нет доступа, то тянем к себе
+   helm pull oci://registry-1.docker.io/bitnamicharts/keycloak --version 24.7.3
+   helm pull oci://registry-1.docker.io/bitnamicharts/postgresql --version 14.2.3
+
+4. Сборка и загрузка Docker-образов в Minikube
    ```bash
    docker build -t exchange-generator-application:0.0.1-SNAPSHOT ./exchangeGeneratorApplication
    docker build -t notifications-application:0.0.1-SNAPSHOT ./notificationsApplication
@@ -115,6 +119,8 @@ kubectl get pvc
 kubectl delete pvc data-yabank-db-0
 
 kubectl port-forward yabank-db-0 5432:5432
+
+kubectl port-forward yabank-keycloak-0 8080:8080
 
    
 6. Запуск сервисов Docker Compose:

@@ -10,6 +10,8 @@ data:
       application:
         name: exchangeGeneratorApplication
       cloud:
+        discovery:
+          enabled: false
         config:
           enabled: false
       datasource:
@@ -26,8 +28,11 @@ data:
                 client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
             provider:
               keycloak:
-                token-uri: ${KEYCLOAK_TOKEN_URL}
+                token-uri: {{ tpl .Values.keycloak.token_uri . | quote }}
     server:
-      port: ${EXCHANGE_GENEGATOR_SERVER_PORT}
+      port: {{ .Values.service.port }}
     ya-bank:
-      gateway: ${GATEWAY_SERVER_URL}
+      gateway: {{ tpl .Values.gateway.service_url . | quote }}
+    eureka:
+      client:
+        enabled: false
