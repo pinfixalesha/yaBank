@@ -18,7 +18,7 @@
 - **Фреймворк:** Spring Boot
 - **База данных:** PostgreSQL
 - **Миграции базы данных:** Liquibase
-- **Контейнеризация:** Docker
+- **Контейнеризация:** Helm + Kubernetes
 - **Оркестрация контейнеров:** Docker Compose
 - **Архитектура:** Микросервисная
 - **Авторизация:** OAuth 2.0 (JWT)
@@ -60,63 +60,57 @@ git clone https://github.com/pinfixalesha/yaBank.git
    minikube start
    minikube status
    ```
-3)  для Minikube включите Ingress-добавку
-minikube addons enable ingress
-
-minikube config view vm-driver
-minikube config get memory
-minikube config set memory 16384
-minikube stop
-minikube start
-
-3. Minikube / локальный кластер не имеет правильной настройки DNS, поэтому 
-minikube ip
-в /etc/hosts указываем
+5. Для Minikube включите Ingress-добавку и увеличим память
+   ```bash
+   minikube addons enable ingress
+   minikube config view vm-driver
+   minikube config get memory
+   minikube config set memory 16384
+   minikube stop
+   minikube start
+   ```
+6. Minikube / локальный кластер не имеет правильной настройки DNS, поэтому ip указываем в /etc/hosts  
+   ```bash
+   minikube ip
+   ```
+Формат
 <minikube-ip> gateway-ingress.yabank.local
 
-6. Активируем Docker-окружение Minikube
+7. Активируем Docker-окружение Minikube
    ```bash
    minikube docker-env >addenv.bat
    addenv.bat
    ```
-3. Если нет доступа, то тянем к себе
+8. Если нет доступа к bitnamicharts, то тянем к себе вручную
+   ```bash
    helm pull oci://registry-1.docker.io/bitnamicharts/keycloak --version 24.7.3
    helm pull oci://registry-1.docker.io/bitnamicharts/postgresql --version 14.2.3
-
-4. Сборка и загрузка Docker-образов в Minikube
+   ```
+9. Сборка и загрузка Docker-образов в Minikube
    ```bash
    docker images
    minikube image ls   
    docker build -t exchange-generator-application:0.0.1-SNAPSHOT ./exchangeGeneratorApplication
-   minikube image load exchange-generator-application:0.0.1-SNAPSHOT
    docker build -t notifications-application:0.0.1-SNAPSHOT ./notificationsApplication
-   minikube image load notifications-application:0.0.1-SNAPSHOT
    docker build -t blocker-application:0.0.1-SNAPSHOT ./blockerApplication
-   minikube image load blocker-application:0.0.1-SNAPSHOT
    docker build -t exchange-application:0.0.1-SNAPSHOT ./exchangeApplication
-   minikube image load exchange-application:0.0.1-SNAPSHOT
    ```
 
-3) Проверка ingress
+10. Проверка ingress
    ```bash
    kubectl get pods -n kube-system
-   ```
-4) Ingress
-   ```bash
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
-   ```
-5) Проверка ingress
-   ```bash
    kubectl get svc -n ingress-nginx
    ```
-6) Обновление helm чартов
+11. Обновление helm чартов
    ```bash
    cd ya-bank
    helm dependency update .
-    ```
-Запуск
-helm install yabank ./
-helm upgrade yabank ./
+   ```
+12. Запуск
+   ```bash
+   helm install yabank ./
+   ```
 
 
 Шаг 5. Проверьте, что сервис запущен и доступен внутри кластера
