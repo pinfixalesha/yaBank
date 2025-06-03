@@ -29,6 +29,13 @@ public class ExchangeApplicationService {
         backoff = @Backoff(delay = 1000)        // Задержка между попытками (в миллисекундах)
     )
     public HttpResponseDto sendRates(List<CurrencyRateDto> currencyRateDtos) {
+        return restClient.post()
+                .uri(exchangeApplicationUrl)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(currencyRateDtos)
+                .retrieve()
+                .body(HttpResponseDto.class);
+        /*
         try {
             return restClient.post()
                     .uri(exchangeApplicationUrl)
@@ -39,9 +46,10 @@ public class ExchangeApplicationService {
         } catch (Exception e) {
             return HttpResponseDto.builder()
                     .statusCode("500")
-                    .statusMessage("Не удалось проверить подозрительную операцию. Причина: " + e.getMessage())
+                    .statusMessage("Не удалось отправить курсы валют. Причина: " + e.getMessage())
                     .build();
         }
+         */
     }
 
 }

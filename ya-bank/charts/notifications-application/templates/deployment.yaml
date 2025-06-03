@@ -1,4 +1,4 @@
-{{- $fullName := include "blocker-application.fullname" . -}}
+{{- $fullName := include "notifications-application.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,11 +7,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ $fullName }}
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}
+        app: {{ $fullName }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -28,6 +28,11 @@ spec:
                 secretKeyRef:
                   name: yabank-db
                   key: password
+          resources:
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
           volumeMounts:
             - name: config-volume
               mountPath: /app/config

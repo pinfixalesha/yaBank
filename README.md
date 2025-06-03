@@ -69,6 +69,10 @@ minikube config set memory 16384
 minikube stop
 minikube start
 
+3. Minikube / локальный кластер не имеет правильной настройки DNS, поэтому 
+minikube ip
+в /etc/hosts указываем
+<minikube-ip> gateway-ingress.yabank.local
 
 6. Активируем Docker-окружение Minikube
    ```bash
@@ -81,6 +85,8 @@ minikube start
 
 4. Сборка и загрузка Docker-образов в Minikube
    ```bash
+   docker images
+   minikube image ls   
    docker build -t exchange-generator-application:0.0.1-SNAPSHOT ./exchangeGeneratorApplication
    minikube image load exchange-generator-application:0.0.1-SNAPSHOT
    docker build -t notifications-application:0.0.1-SNAPSHOT ./notificationsApplication
@@ -110,6 +116,7 @@ minikube start
     ```
 Запуск
 helm install yabank ./
+helm upgrade yabank ./
 
 
 Шаг 5. Проверьте, что сервис запущен и доступен внутри кластера
@@ -139,7 +146,7 @@ kubectl port-forward yabank-db-0 5432:5432
 kubectl port-forward yabank-keycloak-0 8080:8080
 
 Для получения внешнего ip ingress
-kubectl get ingress 
+kubectl get ingress, если дает ip 127.0.0.1, то выполнить minikube addons enable ingress
 kubectl get svc -A | grep ingress - получаем    
 >ingress-nginx   ingress-nginx-controller             LoadBalancer   10.109.152.214   127.0.0.1     80:30813/TCP,443:32321/TCP   10d
 Это и есть IP
@@ -148,6 +155,8 @@ kubectl get svc -A | grep ingress - получаем
 helm uninstall yabank
 kubectl delete pvc data-yabank-postgresql-0
 helm install yabank ./
+helm upgrade yabank ./
+helm install yabank ./ --dry-run >1.xxx
 
 6. Запуск сервисов Docker Compose:
    ```bash
@@ -155,6 +164,28 @@ helm install yabank ./
    ```
 Приложение будет доступно по адресу: http://localhost:8080
 
+
+//decsrube log
+
+Добавляем curl
+kubectl exec -it yabank-exchange-generator-application-548c6798b7-lllcx -- sh
+apk add curl
+curl -v http://yabank-exchange-application.default.svc.cluster.local:80/exchange/rates
+curl -v http://gateway-ingress.yabank.local/exchangeApplication/exchange/rates
+curl -v http://10.103.210.253/exchange/rates
+curl -v http://yabank-exchange-application.default.svc.cluster.local:80/actuator/health
+curl -v http://gateway-ingress.yabank.local/exchangeApplication/actuator/health
+curl -v http://127.0.0.1:80/exchange/rates
+curl -v http://127.0.0.1:80/actuator/health
+
+kubectl port-forward svc/yabank-exchange-application 8080:80
+curl http://localhost:8080/actuator/health
+
+Endpoints сервиса пустые
+kubectl get ingress
+kubectl describe pod yabank-exchange-application-xxx
+kubectl describe service yabank-exchange-application
+kubectl get endpoints yabank-exchange-application
 
 ## Тестирование
 

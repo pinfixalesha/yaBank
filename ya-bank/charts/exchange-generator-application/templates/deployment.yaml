@@ -1,4 +1,4 @@
-{{- $fullName := include "blocker-application.fullname" . -}}
+{{- $fullName := include "exchange-generator-application.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,12 +7,13 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ $fullName }}
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}
+        app: {{ $fullName }}
     spec:
+      serviceAccountName: {{ include "exchange-generator-application.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -22,6 +23,11 @@ spec:
             # Указывает Spring искать конфигурацию в /app/config/
             - name: SPRING_CONFIG_LOCATION
               value: file:///app/config/
+          resources:
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
           volumeMounts:
             - name: config-volume
               mountPath: /app/config

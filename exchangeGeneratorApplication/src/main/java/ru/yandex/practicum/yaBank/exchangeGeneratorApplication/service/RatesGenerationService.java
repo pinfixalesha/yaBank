@@ -5,6 +5,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.dto.CurrencyRateDto;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.dto.HttpResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -15,6 +17,8 @@ import java.util.Random;
 @Service
 public class RatesGenerationService {
 
+    private static final Logger log = LoggerFactory.getLogger(RatesGenerationService.class);
+
     @Autowired
     private ExchangeApplicationService exchangeApplicationService;
 
@@ -23,7 +27,13 @@ public class RatesGenerationService {
     @Scheduled(fixedRate = 10000)
     public void generateRates() {
         List<CurrencyRateDto> currencyRateDtos = generateRandomRates();
+        log.info("Отправка курсов валют "+currencyRateDtos);
         HttpResponseDto response = exchangeApplicationService.sendRates(currencyRateDtos);
+        if (response!=null) {
+            log.info("Результат отправки " + response.getStatusCode() + " " + response.getStatusMessage());
+        } else {
+            log.info("Результат отправки null");
+        }
     }
 
     private List<CurrencyRateDto> generateRandomRates() {

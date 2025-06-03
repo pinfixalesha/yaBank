@@ -11,23 +11,30 @@ exchange-application:
     # -----------------------------
   service:
     type: ClusterIP
-    port: 8087
+    port: 80
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   ingress:
     enabled: true
     className: "nginx"
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      nginx.ingress.kubernetes.io/use-regex: "true"
     hosts:
       - host: gateway-ingress.yabank.local
         paths:
-          - path: /exchangeApplication
-            pathType: Prefix
+          - path: /exchangeApplication(/|$)(.*)
+            pathType: ImplementationSpecific
     tls: [ ]
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
 
 blocker-application:
   replicaCount: 1
@@ -45,16 +52,23 @@ blocker-application:
   ingress:
     enabled: true
     className: "nginx"
-    annotations: {}
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      nginx.ingress.kubernetes.io/use-regex: "true"
     hosts:
       - host: gateway-ingress.yabank.local
         paths:
-          - path: /blockerapplication
-            pathType: Prefix
+          - path: /blockerapplication(/|$)(.*)
+            pathType: ImplementationSpecific
     tls: [ ]
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
 
 exchange-generator-application:
   replicaCount: 1
@@ -81,6 +95,11 @@ exchange-generator-application:
     tls: [ ]
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
 
 notifications-application:
   replicaCount: 1
@@ -108,7 +127,11 @@ notifications-application:
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
-
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
 
 db:
   enabled: true

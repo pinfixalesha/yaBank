@@ -1,12 +1,12 @@
 {{- if .Values.ingress.enabled -}}
-  {{- $fullName := include "exchange-generator-application.fullname" . -}}
+  {{- $fullName := include "exchange-application.fullname" . -}}
   {{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "exchange-generator-application.labels" . | nindent 4 }}
+    {{- include "exchange-application.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
