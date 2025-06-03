@@ -72,7 +72,11 @@ git clone https://github.com/pinfixalesha/yaBank.git
 4. Сборка и загрузка Docker-образов в Minikube
    ```bash
    docker build -t exchange-generator-application:0.0.1-SNAPSHOT ./exchangeGeneratorApplication
+   minikube image load exchange-generator-application:0.0.1-SNAPSHOT
    docker build -t notifications-application:0.0.1-SNAPSHOT ./notificationsApplication
+   minikube image load notifications-application:0.0.1-SNAPSHOT
+   docker build -t blocker-application:0.0.1-SNAPSHOT ./blockerApplication
+   minikube image load blocker-application:0.0.1-SNAPSHOT
    ```
 
 3) Проверка ingress

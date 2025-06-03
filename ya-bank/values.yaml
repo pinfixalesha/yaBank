@@ -2,17 +2,39 @@
 global:
   domain: yabank.local # Example domain for ingress
 
-# Configuration for the customer-service subchart
-# NOTE: For local development (Minikube/Kind/Docker Desktop), build the image locally
-# (e.g., `docker build -t customer-service:0.0.1-SNAPSHOT .` in customer-service dir)
-# and ensure your K8s cluster can access local images (e.g., `minikube docker-env` or `kind load docker-image ...`).
+blocker-application:
+  replicaCount: 1
+  image:
+    repository: blocker-application
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8085
+  keycloak:
+    issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
+    token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: {}
+    hosts:
+      - host: exchange-generator-application.yabank.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: [ ]
+  config:
+    database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
+    database_username: "yabank"
+
 exchange-generator-application:
   replicaCount: 1
   image:
-    # --- REVERTED TO LOCAL REPO ---
-    repository: exchange-generator-application # Removed registry prefix
+    repository: exchange-generator-application
     tag: "0.0.1-SNAPSHOT"
-    pullPolicy: IfNotPresent # Use IfNotPresent for local images
+    pullPolicy: IfNotPresent
     # -----------------------------
   service:
     type: ClusterIP

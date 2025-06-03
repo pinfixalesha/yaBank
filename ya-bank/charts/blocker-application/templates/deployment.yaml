@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blocker-application
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: blocker-application
+  template:
+    metadata:
+      labels:
+        app: blocker-application
+    spec:
+      containers:
+        - name: blocker-application
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+            - name: SPRING_DATASOURCE_USERNAME
+              value: {{ .Values.config.database_username | quote }}
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "blocker-application.fullname" . }}

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "blocker-application.fullname" . }}
+  labels:
+    {{- include "blocker-application.labels" . | nindent 4 }}
+data:
+  application.yml: |
+    spring:
+      application:
+        name: blockerApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        url: {{ tpl .Values.config.database_url . | quote }}
+        username: {{ .Values.config.database_username | quote }}
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: none
+        show-sql: true
+      liquibase:
+        enabled: true
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
+    server:
+      port: {{ .Values.service.port }}
+    eureka:
+      client:
+        enabled: false
+    logging:
+      level:
+        liquibase: DEBUG    
