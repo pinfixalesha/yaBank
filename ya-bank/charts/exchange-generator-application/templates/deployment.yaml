@@ -1,19 +1,20 @@
+{{- $fullName := include "blocker-application.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: exchange-generator-application
+  name: {{ $fullName }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: exchange-generator-application
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: exchange-generator-application
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: exchange-generator
+        - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: {{ .Values.service.port }}
@@ -27,4 +28,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ include "exchange-generator-application.fullname" . }}
+            name: {{ $fullName }}

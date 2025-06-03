@@ -1,10 +1,11 @@
+{{- $fullName := include "blocker-application.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: blocker-application
+  name: {{ $fullName }}
 spec:
   selector:
-    app: blocker-application
+    app: {{ $fullName }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}

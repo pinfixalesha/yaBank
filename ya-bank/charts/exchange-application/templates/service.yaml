@@ -1,10 +1,11 @@
+{{- $fullName := include "exchange-application.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: exchange-application
+  name: {{ $fullName }}
 spec:
   selector:
-    app: exchange-application
+    app: {{ $fullName }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}

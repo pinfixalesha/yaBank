@@ -1,19 +1,20 @@
+{{- $fullName := include "blocker-application.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notifications-application
+  name: {{ $fullName }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: notifications-application
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: notifications-application
+        app: {{ .Chart.Name }}
     spec:
       containers:
-        - name: notifications-application
+        - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: {{ .Values.service.port }}
@@ -33,4 +34,4 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ include "notifications-application.fullname" . }}
+            name: {{ $fullName }}

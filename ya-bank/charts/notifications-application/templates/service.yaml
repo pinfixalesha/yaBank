@@ -1,10 +1,11 @@
+{{- $fullName := include "notifications-application.fullname" . -}}
 apiVersion: v1
 kind: Service
 metadata:
-  name: notifications-application
+  name: {{ $fullName }}
 spec:
   selector:
-    app: notifications-application
+    app: {{ $fullName }}
   ports:
     - protocol: TCP
       port: {{ .Values.service.port }}
