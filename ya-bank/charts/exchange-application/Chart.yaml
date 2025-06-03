@@ -1,0 +1,4 @@
+apiVersion: v2
+name: exchange-application
+version: 0.1.0
+description: Helm чарт для exchange-application

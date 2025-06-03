@@ -24,6 +24,9 @@ dependencies:
   - name: blocker-application
     version: "0.1.0"
     repository: "file://./charts/blocker-application"
+  - name: exchange-application
+    version: "0.1.0"
+    repository: "file://./charts/exchange-application"
 
 
 #  - name: accounts-application
@@ -32,9 +35,6 @@ dependencies:
 #  - name: bank-ui-application
 #    version: 0.1.0
 #    repository: file://charts/bank-ui-application
-#  - name: exchange-application
-#    version: 0.1.0
-#    repository: file://charts/exchange-application
 #  - name: cash-application
 #    version: 0.1.0
 #    repository: file://charts/cash-application

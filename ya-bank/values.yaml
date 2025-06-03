@@ -2,6 +2,33 @@
 global:
   domain: yabank.local # Example domain for ingress
 
+exchange-application:
+  replicaCount: 1
+  image:
+    repository: exchange-application
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8087
+  keycloak:
+    issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
+    token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations: {}
+    hosts:
+      - host: gateway-ingress.yabank.local
+        paths:
+          - path: /exchangeApplication
+            pathType: Prefix
+    tls: [ ]
+  config:
+    database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
+    database_username: "yabank"
+
 blocker-application:
   replicaCount: 1
   image:
@@ -20,10 +47,10 @@ blocker-application:
     className: "nginx"
     annotations: {}
     hosts:
-      - host: exchange-generator-application.yabank.local
+      - host: gateway-ingress.yabank.local
         paths:
-          - path: /
-            pathType: ImplementationSpecific
+          - path: /blockerapplication
+            pathType: Prefix
     tls: [ ]
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
@@ -43,17 +70,17 @@ exchange-generator-application:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   ingress:
-    enabled: true
+    enabled: false
     className: "nginx"
     annotations: {}
     hosts:
-      - host: exchange-generator-application.yabank.local
+      - host: gateway-ingress.yabank.local
         paths:
           - path: /
-            pathType: ImplementationSpecific
+            pathType: Prefix
     tls: [ ]
   gateway:
-    service_url: "http://exchange-application.{{ .Release.Namespace }}.svc.cluster.local:8087"
+    service_url: "http://gateway-ingress.yabank.local"
 
 notifications-application:
   replicaCount: 1
@@ -70,10 +97,10 @@ notifications-application:
     className: "nginx"
     annotations: {}
     hosts:
-      - host: notifications-application.yabank.local
+      - host: gateway-ingress.yabank.local
         paths:
-          - path: /
-            pathType: ImplementationSpecific
+          - path: /notificationsapplication
+            pathType: Prefix
     tls: [ ]
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"

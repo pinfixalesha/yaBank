@@ -60,7 +60,17 @@ git clone https://github.com/pinfixalesha/yaBank.git
    minikube start
    minikube status
    ```
-5. Активируем Docker-окружение Minikube
+3)  для Minikube включите Ingress-добавку
+minikube addons enable ingress
+
+minikube config view vm-driver
+minikube config get memory
+minikube config set memory 16384
+minikube stop
+minikube start
+
+
+6. Активируем Docker-окружение Minikube
    ```bash
    minikube docker-env >addenv.bat
    addenv.bat
@@ -77,6 +87,8 @@ git clone https://github.com/pinfixalesha/yaBank.git
    minikube image load notifications-application:0.0.1-SNAPSHOT
    docker build -t blocker-application:0.0.1-SNAPSHOT ./blockerApplication
    minikube image load blocker-application:0.0.1-SNAPSHOT
+   docker build -t exchange-application:0.0.1-SNAPSHOT ./exchangeApplication
+   minikube image load exchange-application:0.0.1-SNAPSHOT
    ```
 
 3) Проверка ingress
@@ -126,7 +138,17 @@ kubectl port-forward yabank-db-0 5432:5432
 
 kubectl port-forward yabank-keycloak-0 8080:8080
 
-   
+Для получения внешнего ip ingress
+kubectl get ingress 
+kubectl get svc -A | grep ingress - получаем    
+>ingress-nginx   ingress-nginx-controller             LoadBalancer   10.109.152.214   127.0.0.1     80:30813/TCP,443:32321/TCP   10d
+Это и есть IP
+
+Перезапуск
+helm uninstall yabank
+kubectl delete pvc data-yabank-postgresql-0
+helm install yabank ./
+
 6. Запуск сервисов Docker Compose:
    ```bash
    docker-compose up --build -d
