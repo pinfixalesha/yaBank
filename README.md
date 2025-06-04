@@ -222,9 +222,8 @@ minikube addons enable ingress
 kubectl get svc -A | grep ingress
 # Пример вывода:
 # ingress-nginx   ingress-nginx-controller             LoadBalancer   10.109.152.214   127.0.0.1     80:30813/TCP,443:32321/TCP   10d
-```
-
 > **IP:** `127.0.0.1` или другой указанный.
+```
 
 ## Обновление/перезапуск приложения через Helm
 
