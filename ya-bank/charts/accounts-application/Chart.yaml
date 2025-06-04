@@ -1,0 +1,4 @@
+apiVersion: v2
+name: accounts-application
+version: 0.1.0
+description: Helm чарт для accounts-application

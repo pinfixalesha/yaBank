@@ -27,17 +27,16 @@ dependencies:
   - name: exchange-application
     version: "0.1.0"
     repository: "file://./charts/exchange-application"
+  - name: accounts-application
+    version: "0.1.0"
+    repository: "file://./charts/accounts-application"
 
-
-#  - name: accounts-application
-#    version: 0.1.0
-#    repository: file://charts/accounts-application
-#  - name: bank-ui-application
-#    version: 0.1.0
-#    repository: file://charts/bank-ui-application
 #  - name: cash-application
-#    version: 0.1.0
-#    repository: file://charts/cash-application
+#    version: "0.1.0"
+#    repository: "file://./charts/cash-application"
 #  - name: transfer-application
-#    version: 0.1.0
-#    repository: file://charts/transfer-application
+#    version: "0.1.0"
+#    repository: "file://./charts/transfer-application"
+#  - name: bank-ui-application
+#    version: "0.1.0"
+#    repository: "file://./charts/bank-ui-application"
