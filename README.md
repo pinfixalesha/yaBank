@@ -164,81 +164,124 @@ git clone https://github.com/pinfixalesha/yaBank.git
     Phase:          Succeeded    
     ```
 
-Шаг 5. Проверьте, что сервис запущен и доступен внутри кластера
-kubectl get svc
 
+# Полезные команды для работы с Kubernetes и Helm
 
-kubectl get pods
-
-Кол-во реплик
+## Получение ReplicaSet
+```bash
 kubectl get replicaset -l app=exchange-generator-application
+```
 
+## Вход в контейнер и вывод секрета БД
+
+### Подключение к Pod'у:
+```bash
 kubectl exec -it yabank-db-0 -- bash
-Вывод ключа пароля к БД
+```
+
+### Получение пароля из Secret:
+```bash
 kubectl get secret yabank-db -o jsonpath='{.data}'
->'{"postgres-password":"VTdhSXVVN3EyZw=="}'
->echo "VTdhSXVVN3EyZw==" | base64 --decode
-U7aIuU7q2g
+# Пример вывода: {"postgres-password":"VTdhSXVVN3EyZw=="}
+echo "VTdhSXVVN3EyZw==" | base64 --decode
+# Расшифрованный пароль: U7aIuU7q2g
+```
 
-СУБД настройки не применяются без пересоздания PVC
-uninstall проекта найдите и удалите PVC:
+## Пересоздание PVC при изменении настроек СУБД
+
+### Удаление PVC:
+```bash
 kubectl get pvc
-Затем удалите и затем install заново
 kubectl delete pvc data-yabank-db-0
+```
 
+### После удаления — установите проект заново:
+```bash
+helm install yabank ./
+```
+
+## Проброс портов
+
+### PostgreSQL:
+```bash
 kubectl port-forward yabank-db-0 5432:5432
+```
 
+### Keycloak:
+```bash
 kubectl port-forward yabank-keycloak-0 8080:8080
+```
 
-Для получения внешнего ip ingress
-kubectl get ingress, если дает ip 127.0.0.1, то выполнить minikube addons enable ingress
-kubectl get svc -A | grep ingress - получаем    
->ingress-nginx   ingress-nginx-controller             LoadBalancer   10.109.152.214   127.0.0.1     80:30813/TCP,443:32321/TCP   10d
-Это и есть IP
+## Получение внешнего IP Ingress
 
-Перезапуск
+```bash
+kubectl get ingress
+# Если IP = 127.0.0.1, выполните:
+minikube addons enable ingress
+
+kubectl get svc -A | grep ingress
+# Пример вывода:
+# ingress-nginx   ingress-nginx-controller             LoadBalancer   10.109.152.214   127.0.0.1     80:30813/TCP,443:32321/TCP   10d
+```
+
+> **IP:** `127.0.0.1` или другой указанный.
+
+## Обновление/перезапуск приложения через Helm
+
+### Удаление и повторная установка:
+```bash
 helm uninstall yabank
 kubectl delete pvc data-yabank-postgresql-0
 helm install yabank ./
+```
+
+### Обновление:
+```bash
 helm upgrade yabank ./
+```
+
+### Проверка конфигурации без применения:
+```bash
 helm install yabank ./ --dry-run >1.xxx
+```
 
-6. Запуск сервисов Docker Compose:
-   ```bash
-   docker-compose up --build -d
-   ```
-Приложение будет доступно по адресу: http://localhost:8080
+## Установка curl внутри контейнера и тестирование
 
-
-//decsrube log
-
-Добавляем curl
+### Вход в Pod:
+```bash
 kubectl exec -it yabank-exchange-generator-application-548c6798b7-lllcx -- sh
+```
+
+### Установка и использование curl:
+```bash
 apk add curl
 curl -v http://yabank-exchange-application.default.svc.cluster.local:80/exchange/rates
 curl -v http://gateway-ingress.yabank.local/exchangeApplication/exchange/rates
-curl -v http://10.103.210.253/exchange/rates
-curl -v http://yabank-exchange-application.default.svc.cluster.local:80/actuator/health
-curl -v http://gateway-ingress.yabank.local/exchangeApplication/actuator/health
-curl -v http://127.0.0.1:80/exchange/rates
-curl -v http://127.0.0.1:80/actuator/health
+```
 
+## Проброс сервиса и проверка health-check
+
+```bash
 kubectl port-forward svc/yabank-exchange-application 8080:80
 curl http://localhost:8080/actuator/health
+```
 
-Endpoints сервиса пустые
+## Информационные команды
+
+### Текущие ресурсы:
+```bash
 kubectl get ingress
+kubectl get svc
+kubectl get pods
+```
+
+### Детализация:
+```bash
 kubectl describe pod yabank-exchange-application-xxx
 kubectl describe service yabank-exchange-application
 kubectl get endpoints yabank-exchange-application
 kubectl get events -n default
-## Тестирование
-
-Приложение покрыто юнит- и интеграционными тестами с использованием JUnit 5, TestContext Framework и Spring Boot Test. Для запуска тестов выполните:
-
-   ```bash
-   gradle test
-   ```
+```
 
 ### Безопастность
 
