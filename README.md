@@ -96,6 +96,7 @@ git clone https://github.com/pinfixalesha/yaBank.git
    docker build -t exchange-application:0.0.1-SNAPSHOT ./exchangeApplication
    docker build -t accounts-application:0.0.1-SNAPSHOT ./accountsApplication
    docker build -t cash-application:0.0.1-SNAPSHOT ./cashApplication   
+   docker build -t transfer-application:0.0.1-SNAPSHOT ./transferApplication   
    ```
 
 10. Проверка ingress

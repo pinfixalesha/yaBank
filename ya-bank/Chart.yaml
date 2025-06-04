@@ -33,10 +33,9 @@ dependencies:
   - name: cash-application
     version: "0.1.0"
     repository: "file://./charts/cash-application"
-
-#  - name: transfer-application
-#    version: "0.1.0"
-#    repository: "file://./charts/transfer-application"
+  - name: transfer-application
+    version: "0.1.0"
+    repository: "file://./charts/transfer-application"
 #  - name: bank-ui-application
 #    version: "0.1.0"
 #    repository: "file://./charts/bank-ui-application"
