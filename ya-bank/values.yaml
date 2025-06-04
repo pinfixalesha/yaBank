@@ -144,7 +144,7 @@ accounts-application:
     # -----------------------------
   service:
     type: ClusterIP
-    port: 8081
+    port: 8083
   ingress:
     enabled: true
     className: "nginx"
@@ -163,6 +163,39 @@ accounts-application:
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  gateway:
+    service_url: "http://gateway-ingress.yabank.local"
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
+
+cash-application:
+  replicaCount: 1
+  image:
+    repository: cash-application
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8092
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      nginx.ingress.kubernetes.io/use-regex: "true"
+    hosts:
+      - host: gateway-ingress.yabank.local
+        paths:
+          - path: /cashApplication(/|$)(.*)
+            pathType: ImplementationSpecific
+    tls: [ ]
+  keycloak:
+    issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
+    token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
   resources:

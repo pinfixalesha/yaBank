@@ -1,4 +1,4 @@
-{{- $fullName := include "accounts-application.fullname" . -}}
+{{- $fullName := include "cash-application.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,7 +13,7 @@ spec:
       labels:
         app: {{ $fullName }}
     spec:
-      serviceAccountName: {{ include "accounts-application.serviceAccountName" . }}
+      serviceAccountName: {{ include "cash-application.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -22,13 +22,6 @@ spec:
           env:
             - name: SPRING_CONFIG_LOCATION
               value: file:///app/config/
-            - name: SPRING_DATASOURCE_USERNAME
-              value: {{ .Values.config.database_username | quote }}
-            - name: SPRING_DATASOURCE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: yabank-db
-                  key: password
           resources:
             limits:
               memory: {{ .Values.resources.limits.memory | quote }}

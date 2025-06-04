@@ -30,10 +30,10 @@ dependencies:
   - name: accounts-application
     version: "0.1.0"
     repository: "file://./charts/accounts-application"
+  - name: cash-application
+    version: "0.1.0"
+    repository: "file://./charts/cash-application"
 
-#  - name: cash-application
-#    version: "0.1.0"
-#    repository: "file://./charts/cash-application"
 #  - name: transfer-application
 #    version: "0.1.0"
 #    repository: "file://./charts/transfer-application"

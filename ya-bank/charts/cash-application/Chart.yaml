@@ -1,0 +1,4 @@
+apiVersion: v2
+name: cash-application
+version: 0.1.0
+description: Helm чарт для cash-application

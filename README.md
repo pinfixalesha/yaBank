@@ -95,6 +95,7 @@ git clone https://github.com/pinfixalesha/yaBank.git
    docker build -t blocker-application:0.0.1-SNAPSHOT ./blockerApplication
    docker build -t exchange-application:0.0.1-SNAPSHOT ./exchangeApplication
    docker build -t accounts-application:0.0.1-SNAPSHOT ./accountsApplication
+   docker build -t cash-application:0.0.1-SNAPSHOT ./cashApplication   
    ```
 
 10. Проверка ingress
@@ -181,7 +182,7 @@ kubectl get ingress
 kubectl describe pod yabank-exchange-application-xxx
 kubectl describe service yabank-exchange-application
 kubectl get endpoints yabank-exchange-application
-
+kubectl get events -n default
 ## Тестирование
 
 Приложение покрыто юнит- и интеграционными тестами с использованием JUnit 5, TestContext Framework и Spring Boot Test. Для запуска тестов выполните:
