@@ -13,6 +13,25 @@ spec:
       labels:
         app: {{ $fullName }}
     spec:
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s {{ tpl .Values.keycloak.issuer_uri . }} > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
