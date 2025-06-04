@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bank-ui-application.fullname" . }}
+  labels:
+    {{- include "bank-ui-application.labels" . | nindent 4 }}
+data:
+  application.yml: |  
+    spring:
+      application:
+        name: bankUIApplication
+      cloud:
+        discovery:
+          enabled: false
+        config:
+          enabled: false
+      datasource:
+        initialization-mode: never
+        enabled: false
+      liquibase:
+        enabled: false
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: front-ui
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: {{ tpl .Values.keycloak.token_uri . | quote }}
+    server:
+      port: {{ .Values.service.port }}
+    ya-bank:
+      gateway: {{ tpl .Values.gateway.service_url . | quote }}
+    eureka:
+      client:
+        enabled: false

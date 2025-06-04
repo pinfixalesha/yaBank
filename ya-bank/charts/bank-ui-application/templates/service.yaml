@@ -1,0 +1,15 @@
+{{- $fullName := include "bank-ui-application.fullname" . -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}
+spec:
+  selector:
+    app: {{ $fullName }}
+  ports:
+    - protocol: TCP
+      port: 80
+      nodePort: 31531
+      targetPort: {{ .Values.service.port }}
+      name: http
+  type: NodePort

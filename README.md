@@ -96,7 +96,8 @@ git clone https://github.com/pinfixalesha/yaBank.git
    docker build -t exchange-application:0.0.1-SNAPSHOT ./exchangeApplication
    docker build -t accounts-application:0.0.1-SNAPSHOT ./accountsApplication
    docker build -t cash-application:0.0.1-SNAPSHOT ./cashApplication   
-   docker build -t transfer-application:0.0.1-SNAPSHOT ./transferApplication   
+   docker build -t transfer-application:0.0.1-SNAPSHOT ./transferApplication
+   docker build -t bank-ui-application:0.0.1-SNAPSHOT ./bankUIApplication   
    ```
 
 10. Проверка ingress
@@ -114,7 +115,14 @@ git clone https://github.com/pinfixalesha/yaBank.git
    ```bash
    helm install yabank ./
    ```
-
+13. Доступ к приложени с использованием команды minikube для отображения url приложения  
+    ```bash 
+    minikube service yabank-bank-ui-application --url
+    
+    >http://127.0.0.1:51899
+    >! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+    ```
+    
 
 Шаг 5. Проверьте, что сервис запущен и доступен внутри кластера
 kubectl get svc

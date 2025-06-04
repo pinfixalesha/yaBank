@@ -1,0 +1,56 @@
+{{- $fullName := include "bank-ui-application.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $fullName }}
+  template:
+    metadata:
+      labels:
+        app: {{ $fullName }}
+    spec:
+      serviceAccountName: {{ include "bank-ui-application.serviceAccountName" . }}
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s {{ tpl .Values.keycloak.issuer_uri . }} > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            # Указывает Spring искать конфигурацию в /app/config/
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+          resources:
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ $fullName }}

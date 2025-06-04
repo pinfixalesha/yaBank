@@ -1,0 +1,4 @@
+apiVersion: v2
+name: bank-ui-application
+version: 0.1.0
+description: Helm чарт для bank-ui-application

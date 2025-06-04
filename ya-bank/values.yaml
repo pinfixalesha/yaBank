@@ -237,6 +237,38 @@ transfer-application:
     requests:
       memory: "512Mi"
 
+bank-ui-application:
+  replicaCount: 1
+  image:
+    repository: bank-ui-application
+    tag: "0.0.1-SNAPSHOT"
+    pullPolicy: IfNotPresent
+    # -----------------------------
+  service:
+    type: ClusterIP
+    port: 8080
+  keycloak:
+    issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
+    token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+  ingress:
+    enabled: true
+    className: "nginx"
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    hosts:
+      - host: bank.yabank.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: [ ]
+  gateway:
+    service_url: "http://gateway-ingress.yabank.local"
+  resources:
+    limits:
+      memory: "1Gi"
+    requests:
+      memory: "512Mi"
+
 db:
   enabled: true
   auth:
