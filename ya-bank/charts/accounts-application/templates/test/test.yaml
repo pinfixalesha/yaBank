@@ -1,0 +1,14 @@
+{{- $fullName := include "accounts-application.fullname" . -}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ $fullName }}-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['{{ $fullName }}/actuator/health']

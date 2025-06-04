@@ -122,7 +122,47 @@ git clone https://github.com/pinfixalesha/yaBank.git
     >http://127.0.0.1:51899
     >! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
     ```
-    
+
+14. После запуска выполним тест helm
+    ```bash 
+    helm test yabank
+    ```
+    Ожидаемый результат
+    ```bash 
+    NAME: yabank
+    LAST DEPLOYED: Thu Jun  5 00:43:40 2025
+    NAMESPACE: default
+    STATUS: deployed
+    REVISION: 5
+    TEST SUITE:     yabank-accounts-application-test
+    Last Started:   Thu Jun  5 00:43:47 2025
+    Last Completed: Thu Jun  5 00:43:51 2025
+    Phase:          Succeeded
+    TEST SUITE:     yabank-bank-ui-application-test
+    Last Started:   Thu Jun  5 00:43:51 2025
+    Last Completed: Thu Jun  5 00:43:55 2025
+    Phase:          Succeeded
+    TEST SUITE:     yabank-blocker-application-test
+    Last Started:   Thu Jun  5 00:43:55 2025
+    Last Completed: Thu Jun  5 00:43:59 2025
+    Phase:          Succeeded
+    TEST SUITE:     yabank-cash-application-test
+    Last Started:   Thu Jun  5 00:43:59 2025
+    Last Completed: Thu Jun  5 00:44:03 2025
+    Phase:          Succeeded
+    TEST SUITE:     yabank-exchange-application-test
+    Last Started:   Thu Jun  5 00:44:03 2025
+    Last Completed: Thu Jun  5 00:44:07 2025
+    Phase:          Succeeded
+    TEST SUITE:     yabank-notifications-application-test
+    Last Started:   Thu Jun  5 00:44:07 2025
+    Last Completed: Thu Jun  5 00:44:11 2025
+    Phase:          Succeeded
+    TEST SUITE:     yabank-transfer-application-test
+    Last Started:   Thu Jun  5 00:44:11 2025
+    Last Completed: Thu Jun  5 00:44:15 2025
+    Phase:          Succeeded    
+    ```
 
 Шаг 5. Проверьте, что сервис запущен и доступен внутри кластера
 kubectl get svc
