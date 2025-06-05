@@ -22,8 +22,9 @@
 - **Оркестрация контейнеров:** Docker Compose
 - **Архитектура:** Микросервисная
 - **Авторизация:** OAuth 2.0 (JWT)
-- **Service Discovery и Gateway API:** Eureka
-- **Externalized/Distributed Config:** Spring Cloud Config
+- **Service Discovery и Gateway API:** Kubernetes Ingress
+- **Externalized/Distributed Config:** Kubernetes ConfigMaps
+- **CI/CD:** Jenkins
 
 ## Структура микросервисов
 
@@ -75,6 +76,9 @@ git clone https://github.com/pinfixalesha/yaBank.git
    ```
 Формат
 <minikube-ip> gateway-ingress.yabank.local
+- Пример
+>192.168.49.2 gateway-ingress.yabank.local
+
 
 7. Активируем Docker-окружение Minikube
    ```bash
@@ -292,3 +296,45 @@ kubectl get events -n default
    - KEYCLOAK_ADMIN: admin
    - KEYCLOAK_ADMIN_PASSWORD: adminpassword
    - Настройка клиента KeyCloak: realm-config.json
+
+## CI/CD Jenkins
+
+### 5. Создайте `.env` файл в папке [jenkins](jenkins)
+Создайте файл `.env`:
+
+```env
+# Путь до локального kubeconfig-файла
+KUBECONFIG_PATH=C:\Users\pav\.kube\config.yaml
+
+# Параметры для GHCR
+GITHUB_USERNAME=pinfixalesha
+GITHUB_TOKEN=ghp_{токен}
+GHCR_TOKEN=ghp_{токен}
+
+# Docker registry (в данном случае GHCR)
+DOCKER_REGISTRY=ghcr.io/your-username
+GITHUB_REPOSITORY=pinfixalesha/yaBank
+
+# Пароль к базе данных PostgreSQL
+DB_PASSWORD=12345
+```
+> Убедитесь, что GitHub Token имеет права `write:packages`, `read:packages` и `repo`.
+
+### 6. Запустите Jenkins
+
+```bash
+cd jenkins
+docker compose up -d --build
+```
+
+Jenkins будет доступен по адресу: [http://localhost:8080](http://localhost:8080)
+
+
+## Завершение работы и очистка
+
+Для остановки Jenkins, удаления namespace, а также всех установленных ресурсов, используйте скрипт `nuke-all.sh`.
+Он находится в папке `jenkins`:
+```bash
+cd jenkins
+./nuke-all.sh
+```
