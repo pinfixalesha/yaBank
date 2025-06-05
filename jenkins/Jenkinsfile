@@ -6,7 +6,7 @@ pipeline {
         DB_PASSWORD     = credentials('DB_PASSWORD')
         GITHUB_USERNAME = credentials('GITHUB_USERNAME')
         DB_NAME         = 'yabank'
-        DB_USER         = '123456'
+        DB_USER         = 'yabank'
         IMAGE_TAG       = "${env.BUILD_NUMBER}"
     }
 
