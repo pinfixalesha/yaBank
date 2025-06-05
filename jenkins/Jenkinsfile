@@ -1,0 +1,106 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
+        DB_PASSWORD     = credentials('DB_PASSWORD')
+        GITHUB_USERNAME = credentials('GITHUB_USERNAME')
+        DB_NAME         = 'yabank'
+        DB_USER         = '123456'
+        IMAGE_TAG       = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Build & Unit Tests') {
+            parallel {
+                def microservices = [
+                    'accountsApplication',
+                    'bankUIApplication',
+                    'blockerApplication',
+                    'cashApplication',
+                    'exchangeApplication',
+                    'exchangeGeneratorApplication',
+                    'notificationsApplication',
+                    'transferApplication'
+                ]
+
+                microservices.each { service ->
+                    stage("${service}") {
+                        steps {
+                            dir("${service}") {
+                                sh './gradlew clean test'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                sh """
+                docker build -t ${DOCKER_REGISTRY}/exchange-generator-application:${IMAGE_TAG} ./exchangeGeneratorApplication
+                docker build -t ${DOCKER_REGISTRY}/notifications-application:${IMAGE_TAG} ./notificationsApplication
+                docker build -t ${DOCKER_REGISTRY}/blocker-application:${IMAGE_TAG} ./blockerApplication
+                docker build -t ${DOCKER_REGISTRY}/exchange-application:${IMAGE_TAG} ./exchangeApplication
+                docker build -t ${DOCKER_REGISTRY}/accounts-application:${IMAGE_TAG} ./accountsApplication
+                docker build -t ${DOCKER_REGISTRY}/cash-application:${IMAGE_TAG} ./cashApplication
+                docker build -t ${DOCKER_REGISTRY}/transfer-application:${IMAGE_TAG} ./transferApplication
+                docker build -t ${DOCKER_REGISTRY}/bank-ui-application:${IMAGE_TAG} ./bankUIApplication
+                """
+            }
+        }
+
+        stage('Push Docker Images') {
+            steps {
+                withCredentials([string(credentialsId: 'GHCR_TOKEN', variable: 'GHCR_TOKEN')]) {
+                    sh """
+                    echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
+
+                    docker push ${DOCKER_REGISTRY}/exchange-generator-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/notifications-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/blocker-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/exchange-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/accounts-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/cash-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/transfer-application:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/bank-ui-application:${IMAGE_TAG}
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to TEST using Helm') {
+            steps {
+                sh """
+                helm dependency update .
+                helm upgrade --install yabank ./ \\
+                  --namespace test --create-namespace \\
+                  --set db.auth.username=${DB_USER} \\
+                  --set db.auth.password=${DB_PASSWORD} \\
+                  --set db.auth.database=${DB_NAME} \\
+                """
+            }
+        }
+
+        stage('Manual Approval for PROD') {
+            steps {
+                input message: 'Deploy to PROD environment?', ok: 'Yes, deploy'
+            }
+        }
+
+        stage('Deploy to PROD using Helm') {
+            steps {
+                sh """
+                helm dependency update .
+                helm upgrade --install yabank ./ \\
+                  --namespace prod --create-namespace \\
+                  --set db.auth.username=${DB_USER} \\
+                  --set db.auth.password=${DB_PASSWORD} \\
+                  --set db.auth.database=${DB_NAME} \\
+                """
+            }
+        }
+
+    }
+}
