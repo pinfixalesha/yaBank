@@ -35,6 +35,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-config:4.2.1'
 	implementation 'org.springframework.retry:spring-retry:2.0.11'
 
+	//Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 	// OAuth2 Client для интеграции с Keycloak
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 

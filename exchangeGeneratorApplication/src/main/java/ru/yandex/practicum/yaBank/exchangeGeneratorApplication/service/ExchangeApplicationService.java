@@ -34,15 +34,6 @@ public class ExchangeApplicationService {
     )
     public HttpResponseDto sendRates(List<CurrencyRateDto> currencyRateDtos) {
         log.info("URL "+exchangeApplicationUrl);
-        /*
-        return restClient.post()
-                .uri(exchangeApplicationUrl)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .body(currencyRateDtos)
-                .retrieve()
-                .body(HttpResponseDto.class);
-
-         */
         try {
             return restClient.post()
                     .uri(exchangeApplicationUrl)

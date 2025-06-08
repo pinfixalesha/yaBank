@@ -25,6 +25,17 @@ spring:
         provider:
           keycloak:
             token-uri: http://localhost:8282/realms/yabank/protocol/openid-connect/token
+  kafka:
+    producer:
+      bootstrap-servers: pinyaev.kafka.ru:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.JsonSerializer
+      properties:
+        acks: all
+    admin:
+      client-id: yandex-practicum
+    properties:
+      security.protocol: PLAINTEXT
 server:
   port: 8083
 eureka:
