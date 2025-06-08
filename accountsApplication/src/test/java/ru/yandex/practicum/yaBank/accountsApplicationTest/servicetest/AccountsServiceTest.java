@@ -19,7 +19,6 @@ import ru.yandex.practicum.yaBank.accountsApplication.repository.AccountsReposit
 import ru.yandex.practicum.yaBank.accountsApplication.repository.UsersRepository;
 import ru.yandex.practicum.yaBank.accountsApplication.service.AccountsService;
 import ru.yandex.practicum.yaBank.accountsApplication.service.NotificationProducer;
-import ru.yandex.practicum.yaBank.accountsApplication.service.NotificationService;
 import ru.yandex.practicum.yaBank.accountsApplicationTest.TestSecurityConfig;
 
 import java.math.BigDecimal;

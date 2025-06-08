@@ -61,6 +61,7 @@ dependencies {
 	// Spring Cloud Contract Verifier (для генерации тестов контрактов)
 	testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-verifier:4.2.1'
 
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 }
 
 contracts {

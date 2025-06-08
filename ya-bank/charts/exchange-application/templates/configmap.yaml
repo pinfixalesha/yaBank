@@ -29,6 +29,21 @@ data:
           resourceserver:
             jwt:
               issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
+      kafka:
+        bootstrap-servers: pinyaev.kafka.ru:9092
+        consumer:
+          group-id: currency-rate-group
+          auto-offset-reset: earliest
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+          properties:
+            acks: all
+        listener:
+          ack-mode: RECORD
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT              
     server:
       port: {{ .Values.service.port }}
       address: 0.0.0.0

@@ -50,6 +50,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	testImplementation 'com.h2database:h2'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 
 }
 
