@@ -1,3 +1,0 @@
-include 'blockerApplication', 'cashApplication', 'configServerService', 'eurekaServiceDiscovery',
-        'exchangeApplication', 'exchangeGeneratorApplication', 'gatewayService',
-        'notificationsApplication', 'transferApplication', 'bankUIApplication', 'accountsApplication'

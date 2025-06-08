@@ -1,5 +1,6 @@
 package ru.yandex.practicum.yaBank.accountsApplication.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.yaBank.accountsApplication.dto.AccountDto;
@@ -18,19 +19,23 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AccountsService {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    private AccountsRepository accountsRepository;
+    private final AccountsRepository accountsRepository;
 
     @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Autowired
-    private AccountMapper accountMapper;
+    private final NotificationProducer notificationProducer;
+
+    @Autowired
+    private final AccountMapper accountMapper;
 
     private static final Random random = new Random();
 
@@ -56,7 +61,8 @@ public class AccountsService {
         account.setUser(user);
         Account savedAccount=accountsRepository.save(account);
 
-        notificationService.sendNotification(user.getEmail(),"Новый счет у пользователя успешно зарегистрирован");
+        //notificationService.sendNotification(user.getEmail(),"Новый счет у пользователя успешно зарегистрирован");
+        notificationProducer.sendNotification(user.getEmail(),"Новый счет у пользователя успешно зарегистрирован");
         return savedAccount.getId();
     }
 

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.yaBank.transferApplication.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.yaBank.transferApplication.dto.AccountOperationDto;
@@ -12,19 +13,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TransferService {
 
     @Autowired
-    private AccountApplicationService accountApplicationService;
+    private final AccountApplicationService accountApplicationService;
 
     @Autowired
-    private BlockerApplicationService blockerApplicationService;
+    private final BlockerApplicationService blockerApplicationService;
 
     @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Autowired
-    private ExchangeApplicationService exchangeApplicationService;
+    private final NotificationProducer notificationProducer;
+
+    @Autowired
+    private final ExchangeApplicationService exchangeApplicationService;
 
 
     public void transferOperation(TransferOperationDto transferOperationDto) {
@@ -95,11 +100,13 @@ public class TransferService {
 
         String emailFrom = cashOutDto.getLogin();
         String messageFrom = "Со счета списано " + cashOutDto.getAmount() + " " + cashOutDto.getCurrency();
-        notificationService.sendNotification(emailFrom, messageFrom);
+        //notificationService.sendNotification(emailFrom, messageFrom);
+        notificationProducer.sendNotification(emailFrom, messageFrom);
 
         String emailTo = cashInDto.getLogin();
         String messageTo = "Ваш счет пополнен на " + cashInDto.getAmount() + " " + cashInDto.getCurrency();
-        notificationService.sendNotification(emailTo, messageTo);
+        //notificationService.sendNotification(emailTo, messageTo);
+        notificationProducer.sendNotification(emailTo, messageTo);
     }
 
     private double convertAmount(String fromCurrency, String toCurrency, double amount) {

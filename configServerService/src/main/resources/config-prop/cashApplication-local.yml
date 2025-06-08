@@ -26,7 +26,7 @@ spring:
     producer:
       bootstrap-servers: pinyaev.kafka.ru:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.JsonSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         acks: all
     admin:

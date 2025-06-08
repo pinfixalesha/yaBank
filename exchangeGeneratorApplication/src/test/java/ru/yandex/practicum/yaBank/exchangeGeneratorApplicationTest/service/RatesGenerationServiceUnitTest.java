@@ -11,6 +11,7 @@ import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.ExchangeGenerator
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.dto.CurrencyRateDto;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.dto.HttpResponseDto;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.service.ExchangeApplicationService;
+import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.service.ExchangeProducer;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.service.RatesGenerationService;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplicationTest.TestSecurityConfig;
 
@@ -31,6 +32,9 @@ public class RatesGenerationServiceUnitTest {
     @MockitoBean(reset = MockReset.BEFORE)
     private ExchangeApplicationService exchangeApplicationService;
 
+    @MockitoBean(reset = MockReset.BEFORE)
+    private ExchangeProducer exchangeProducer;
+
     @Test
     void testGenerateRandomRates() {
         ratesGenerationService.generateRates();
@@ -41,7 +45,8 @@ public class RatesGenerationServiceUnitTest {
                 .build();
 
         when(exchangeApplicationService.sendRates(anyList())).thenReturn(mockResponse);
+        when(exchangeProducer.sendRates(anyList())).thenReturn(mockResponse);
 
-        verify(exchangeApplicationService, times(1)).sendRates(anyList());
+        verify(exchangeProducer, times(1)).sendRates(anyList());
     }
 }
