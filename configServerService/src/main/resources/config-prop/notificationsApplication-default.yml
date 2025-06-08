@@ -17,6 +17,21 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URL}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: notify-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: ru.yandex.practicum.yaBank.notificationsApplication.dto
+    listener:
+      ack-mode: RECORD
+    admin:
+      client-id: yandex-practicum
+    properties:
+      security.protocol: PLAINTEXT
 server:
   port: ${NOTIFICATIONS_SERVER_PORT}
 eureka:

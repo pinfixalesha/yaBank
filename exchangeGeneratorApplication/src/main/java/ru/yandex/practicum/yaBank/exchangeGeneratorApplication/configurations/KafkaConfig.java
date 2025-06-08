@@ -1,5 +1,7 @@
 package ru.yandex.practicum.yaBank.exchangeGeneratorApplication.configurations;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -28,7 +30,7 @@ public class KafkaConfig {
         var producerFactory = new DefaultKafkaProducerFactory<String, List<CurrencyRateDto>>(
                 kafkaProperties.buildProducerProperties(null),
                 new StringSerializer(),
-                new JsonSerializer<>()
+                new JsonSerializer<>(new TypeReference<List<CurrencyRateDto>>() {})
         );
         return new KafkaTemplate<>(producerFactory);
     }

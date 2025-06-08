@@ -8,7 +8,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import ru.yandex.practicum.yaBank.accountsApplication.dto.NotificationDto;
+import ru.yandex.practicum.yaBank.notificationsApplication.dto.NotificationDto;
 import ru.yandex.practicum.yaBank.accountsApplication.dto.HttpResponseDto;
 
 

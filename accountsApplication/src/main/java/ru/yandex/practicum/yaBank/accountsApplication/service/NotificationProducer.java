@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.yaBank.accountsApplication.dto.NotificationDto;
+import ru.yandex.practicum.yaBank.notificationsApplication.dto.NotificationDto;
 import ru.yandex.practicum.yaBank.accountsApplication.dto.HttpResponseDto;
 
 import java.util.UUID;

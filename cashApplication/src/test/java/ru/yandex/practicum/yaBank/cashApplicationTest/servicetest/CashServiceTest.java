@@ -14,7 +14,7 @@ import ru.yandex.practicum.yaBank.cashApplication.dto.HttpResponseDto;
 import ru.yandex.practicum.yaBank.cashApplication.service.AccountApplicationService;
 import ru.yandex.practicum.yaBank.cashApplication.service.BlockerApplicationService;
 import ru.yandex.practicum.yaBank.cashApplication.service.CashService;
-import ru.yandex.practicum.yaBank.cashApplication.service.NotificationService;
+import ru.yandex.practicum.yaBank.cashApplication.service.NotificationProducer;
 import ru.yandex.practicum.yaBank.cashApplicationTest.TestSecurityConfig;
 
 import static org.mockito.Mockito.*;
@@ -36,7 +36,7 @@ public class CashServiceTest {
     private BlockerApplicationService blockerApplicationService;
 
     @MockitoBean(reset = MockReset.BEFORE)
-    private NotificationService notificationService;
+    private NotificationProducer notificationProducer;
 
     @Test
     void testCashIn_Success() {
@@ -62,7 +62,7 @@ public class CashServiceTest {
 
         when(blockerApplicationService.checkBlocker(blockerDto)).thenReturn(blockerResponse);
         when(accountApplicationService.cashIn(operation)).thenReturn(accountResponse);
-        when(notificationService.sendNotification("user1", "Ваш счет пополнен на 100.0 USD")).thenReturn(null);
+        when(notificationProducer.sendNotification("user1", "Ваш счет пополнен на 100.0 USD")).thenReturn(null);
 
         // Act
         cashService.cashIn(operation);
@@ -70,7 +70,7 @@ public class CashServiceTest {
         // Assert
         verify(blockerApplicationService, times(1)).checkBlocker(blockerDto);
         verify(accountApplicationService, times(1)).cashIn(operation);
-        verify(notificationService, times(1)).sendNotification("user1", "Ваш счет пополнен на 100.0 USD");
+        verify(notificationProducer, times(1)).sendNotification("user1", "Ваш счет пополнен на 100.0 USD");
     }
 
     @Test
@@ -97,7 +97,7 @@ public class CashServiceTest {
 
         when(blockerApplicationService.checkBlocker(blockerDto)).thenReturn(blockerResponse);
         when(accountApplicationService.cashOut(operation)).thenReturn(accountResponse);
-        when(notificationService.sendNotification("user1", "С вашего счета выполнено списание на 50.0 USD")).thenReturn(null);
+        when(notificationProducer.sendNotification("user1", "С вашего счета выполнено списание на 50.0 USD")).thenReturn(null);
 
         // Act
         cashService.cashOut(operation);
@@ -105,7 +105,7 @@ public class CashServiceTest {
         // Assert
         verify(blockerApplicationService, times(1)).checkBlocker(blockerDto);
         verify(accountApplicationService, times(1)).cashOut(operation);
-        verify(notificationService, times(1)).sendNotification("user1", "С вашего счета выполнено списание на 50.0 USD");
+        verify(notificationProducer, times(1)).sendNotification("user1", "С вашего счета выполнено списание на 50.0 USD");
     }
 
 }

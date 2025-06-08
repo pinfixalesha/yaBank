@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import ru.yandex.practicum.yaBank.transferApplication.dto.HttpResponseDto;
-import ru.yandex.practicum.yaBank.transferApplication.dto.NotificationDto;
+import ru.yandex.practicum.yaBank.notificationsApplication.dto.NotificationDto;
 
 
 @Service

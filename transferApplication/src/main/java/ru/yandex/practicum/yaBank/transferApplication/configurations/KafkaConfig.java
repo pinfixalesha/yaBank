@@ -11,7 +11,7 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import ru.yandex.practicum.yaBank.transferApplication.dto.NotificationDto;
+import ru.yandex.practicum.yaBank.notificationsApplication.dto.NotificationDto;
 
 @Configuration
 @RequiredArgsConstructor

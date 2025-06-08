@@ -15,6 +15,7 @@ import ru.yandex.practicum.yaBank.accountsApplication.dto.UserResponseDto;
 import ru.yandex.practicum.yaBank.accountsApplication.entities.User;
 import ru.yandex.practicum.yaBank.accountsApplication.repository.AccountsRepository;
 import ru.yandex.practicum.yaBank.accountsApplication.repository.UsersRepository;
+import ru.yandex.practicum.yaBank.accountsApplication.service.NotificationProducer;
 import ru.yandex.practicum.yaBank.accountsApplication.service.NotificationService;
 import ru.yandex.practicum.yaBank.accountsApplication.service.UserService;
 import ru.yandex.practicum.yaBank.accountsApplicationTest.TestSecurityConfig;
@@ -44,7 +45,7 @@ public class UserServiceTest {
     private AccountsRepository accountsRepository;
 
     @MockitoBean(reset = MockReset.BEFORE)
-    private NotificationService notificationService;
+    private NotificationProducer notificationProducer;
 
     private User user;
 
@@ -75,14 +76,14 @@ public class UserServiceTest {
                 .statusMessage("OK")
                 .build();
 
-        when(notificationService.sendNotification(anyString(),anyString())).thenReturn(mockResponse);
+        when(notificationProducer.sendNotification(anyString(),anyString())).thenReturn(mockResponse);
         Long userId = userService.createUser(request);
 
         assertNotNull(userId);
         List<User> users = usersRepository.findAll();
         assertEquals(2, users.size());
         assertEquals("user2", users.get(1).getLogin());
-        verify(notificationService, times(1)).sendNotification(anyString(),anyString());
+        verify(notificationProducer, times(1)).sendNotification(anyString(),anyString());
     }
 
     @Test
@@ -105,7 +106,7 @@ public class UserServiceTest {
                 .statusMessage("OK")
                 .build();
 
-        when(notificationService.sendNotification(anyString(),anyString())).thenReturn(mockResponse);
+        when(notificationProducer.sendNotification(anyString(),anyString())).thenReturn(mockResponse);
         Long userId = userService.editUser(request);
 
 
@@ -114,6 +115,6 @@ public class UserServiceTest {
         assertNotNull(updatedUser);
         assertEquals("Иван Иванов (обновленный)", updatedUser.getFio());
         assertEquals(LocalDate.of(1995, 1, 1), updatedUser.getDateOfBirth());
-        verify(notificationService, times(1)).sendNotification(anyString(),anyString());
+        verify(notificationProducer, times(1)).sendNotification(anyString(),anyString());
     }
 }

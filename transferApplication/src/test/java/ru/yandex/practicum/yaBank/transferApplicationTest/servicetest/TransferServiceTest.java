@@ -16,15 +16,13 @@ import ru.yandex.practicum.yaBank.transferApplication.dto.TransferOperationDto;
 import ru.yandex.practicum.yaBank.transferApplication.service.AccountApplicationService;
 import ru.yandex.practicum.yaBank.transferApplication.service.BlockerApplicationService;
 import ru.yandex.practicum.yaBank.transferApplication.service.ExchangeApplicationService;
-import ru.yandex.practicum.yaBank.transferApplication.service.NotificationService;
+import ru.yandex.practicum.yaBank.transferApplication.service.NotificationProducer;
 import ru.yandex.practicum.yaBank.transferApplication.service.TransferService;
 import ru.yandex.practicum.yaBank.transferApplicationTest.TestSecurityConfig;
 
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest(classes = {TransferApplication.class, TestSecurityConfig.class})
@@ -42,7 +40,7 @@ public class TransferServiceTest {
     private BlockerApplicationService blockerApplicationService;
 
     @MockitoBean(reset = MockReset.BEFORE)
-    private NotificationService notificationService;
+    private NotificationProducer notificationProducer;
 
     @MockitoBean(reset = MockReset.BEFORE)
     private ExchangeApplicationService exchangeApplicationService;
@@ -113,7 +111,7 @@ public class TransferServiceTest {
         when(accountApplicationService.cashOut(cashOutDto)).thenReturn(cashOutResponse);
         when(accountApplicationService.cashIn(cashInDto)).thenReturn(cashInResponse);
         when(exchangeApplicationService.getRates()).thenReturn(rates);
-        when(notificationService.sendNotification(anyString(), anyString())).thenReturn(mockResponse);
+        when(notificationProducer.sendNotification(anyString(), anyString())).thenReturn(mockResponse);
 
         transferService.transferOperation(transferOperation);
 
@@ -121,8 +119,8 @@ public class TransferServiceTest {
         verify(blockerApplicationService, times(1)).checkBlocker(blockerDtoReceiver);
         verify(accountApplicationService, times(1)).cashOut(cashOutDto);
         verify(accountApplicationService, times(1)).cashIn(cashInDto);
-        verify(notificationService, times(1)).sendNotification("user1", "Со счета списано 100.0 USD");
-        verify(notificationService, times(1)).sendNotification("user2", "Ваш счет пополнен на 200.0 EUR");
+        verify(notificationProducer, times(1)).sendNotification("user1", "Со счета списано 100.0 USD");
+        verify(notificationProducer, times(1)).sendNotification("user2", "Ваш счет пополнен на 200.0 EUR");
     }
 
 }
