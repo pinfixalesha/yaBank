@@ -298,5 +298,42 @@ services:
     command:
       - start-dev --import-realm
 
+  kafka:
+    image: bitnami/kafka
+    container_name: kafka
+    hostname: pinyaev.kafka.ru
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    expose:
+      - "9093"
+    env_file:
+      - ./kafka/kafka.env
+    volumes:
+      - ./kafka/server.properties:/opt/bitnami/kafka/config/server.properties
+      - ./kafka/producer.properties:/opt/bitnami/kafka/config/producer.properties
+      - ./kafka/consumer.properties:/opt/bitnami/kafka/config/consumer.properties
+    networks:
+      - kafka
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    restart: unless-stopped
+    ports:
+      - "8072:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: pinyaev.kafka.ru:9092
+      KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: PLAINTEXT
+    networks:
+      - kafka
+
 networks:
+  kafka:
+    driver: bridge
+    name: kafka
+    external: true
   postgres_network:
