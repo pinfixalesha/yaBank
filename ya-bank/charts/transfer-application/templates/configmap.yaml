@@ -32,6 +32,17 @@ data:
           resourceserver:
             jwt:
               issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
+      kafka:
+        producer:
+          bootstrap-servers: pinyaev.kafka.ru:9092
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+          properties:
+            acks: all
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT
     server:
       port: {{ .Values.service.port }}
     ya-bank:
