@@ -30,7 +30,7 @@ data:
             jwt:
               issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
       kafka:
-        bootstrap-servers: pinyaev.kafka.ru:9092
+        bootstrap-servers: {{ tpl .Values.kafka.url . | quote }}
         consumer:
           group-id: currency-rate-group
           auto-offset-reset: earliest

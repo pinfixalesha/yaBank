@@ -25,7 +25,10 @@
 - **Service Discovery и Gateway API:** Kubernetes Ingress
 - **Externalized/Distributed Config:** Kubernetes ConfigMaps
 - **CI/CD:** Jenkins
-
+- **Apache Kafka**: Взаимодействие с микросервисом Notifications, Exchange с использованием платформы Apache Kafka
+![kafka_screen1.png](kafka_screen1.png)
+![kafka_screen2.png](kafka_screen2.png)
+- 
 ## Структура микросервисов
 
 1. **Front UI** — Веб-интерфейс приложения.
@@ -92,6 +95,7 @@ git clone https://github.com/pinfixalesha/yaBank.git
    ```bash
    helm pull oci://registry-1.docker.io/bitnamicharts/keycloak --version 24.7.3
    helm pull oci://registry-1.docker.io/bitnamicharts/postgresql --version 14.2.3
+   helm pull oci://registry-1.docker.io/bitnamicharts/kafka --version 32.2.13
    ```
 9. Сборка и загрузка Docker-образов в Minikube
    ```bash
@@ -238,6 +242,8 @@ kubectl get svc -A | grep ingress
 ```bash
 helm uninstall yabank
 kubectl delete pvc data-yabank-postgresql-0
+kubectl delete pvc data-yabank-kafka-broker-0
+kubectl delete pvc data-yabank-kafka-controller-0
 helm install yabank ./
 ```
 
@@ -248,7 +254,7 @@ helm upgrade yabank ./
 
 ### Проверка конфигурации без применения:
 ```bash
-helm install yabank ./ --dry-run >1.xxx
+helm install yabank ./ --dry-run >1.yaml
 ```
 
 ## Установка curl внутри контейнера и тестирование
@@ -289,7 +295,7 @@ kubectl get endpoints yabank-exchange-application
 kubectl get events -n default
 ```
 
-### Безопастность
+### Безопасность
 
 - В проекте реализована система аутентификации и авторизации с использованием Spring Security.
 - В качестве сервера авторизации OAuth 2.0 можно использовать Keycloak, любой другой, который можно установить локально, или самописный сервер авторизации OAuth 2.0 с использованием проекта Spring Security OAuth.

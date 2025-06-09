@@ -39,7 +39,7 @@ data:
               issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
       kafka:
         producer:
-          bootstrap-servers: pinyaev.kafka.ru:9092
+          bootstrap-servers: {{ tpl .Values.kafka.url . | quote }}
           key-serializer: org.apache.kafka.common.serialization.StringSerializer
           value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
           properties:

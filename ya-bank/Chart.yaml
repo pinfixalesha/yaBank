@@ -39,3 +39,8 @@ dependencies:
   - name: bank-ui-application
     version: "0.1.0"
     repository: "file://./charts/bank-ui-application"
+  - name: kafka
+    version: "27.1.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: kafka
+    condition: kafka.enabled

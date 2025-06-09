@@ -26,6 +26,7 @@ for ns in test prod; do
   helm uninstall bank-ui-application -n "$ns" || true
   helm uninstall db -n "$ns" || true
   helm uninstall keycloak -n "$ns" || true
+  helm uninstall kafka -n "$ns" || true
 done
 
 echo "Deleting secrets..."
@@ -33,6 +34,7 @@ for ns in test prod; do
   kubectl delete secret yabank-db -n "$ns" --ignore-not-found
   kubectl delete secret yabank-keycloak -n "$ns" --ignore-not-found
   kubectl delete secret yabank-postgresql -n "$ns" --ignore-not-found
+  kubectl delete secret yabank-kafka -n "$ns" --ignore-not-found
 done
 
 echo "Deleting namespaces..."
