@@ -28,10 +28,17 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-config-server:4.2.2'
 	compileOnly 'org.projectlombok:lombok'
 
+	//zipkin
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+	//grafana
+	implementation 'io.micrometer:micrometer-registry-prometheus:1.15.0'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
 }
 
 tasks.named('test') {

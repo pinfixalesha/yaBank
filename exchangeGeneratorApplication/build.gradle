@@ -40,6 +40,12 @@ dependencies {
 	// OAuth2 Client для интеграции с Keycloak
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+	//zipkin
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+	//grafana
+	implementation 'io.micrometer:micrometer-registry-prometheus:1.15.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 

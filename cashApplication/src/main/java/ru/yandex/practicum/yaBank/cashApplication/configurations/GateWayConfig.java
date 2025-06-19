@@ -1,5 +1,9 @@
 package ru.yandex.practicum.yaBank.cashApplication.configurations;
 
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +20,11 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.web.client.RestClient;
 
 @Configuration
+@RequiredArgsConstructor
 public class GateWayConfig {
+
+    @Autowired
+    private final Tracer tracer;
 
     @Value("${ya-bank.gateway}")
     private String gatewayUrl;
@@ -84,13 +92,28 @@ public class GateWayConfig {
         return manager;
     }
 
+    public final String buildTraceParent(String traceId,String spanId) {
+        return String.format("00-%s-%s-01", traceId, spanId);
+    }
+
     @Bean
     public RestClient restClient(OAuth2AuthorizedClientManager authorizedClientManager) {
         OAuth2ClientHttpRequestInterceptor requestInterceptor =
                 new OAuth2ClientHttpRequestInterceptor(authorizedClientManager);
         requestInterceptor.setClientRegistrationIdResolver(request -> "oauth-yabank");
         return RestClient.builder()
-                .requestInterceptor(requestInterceptor)
+                .requestInterceptor((request, body, execution) -> {
+                    Span currentSpan = tracer.currentSpan();
+                    if (currentSpan != null) {
+                        String traceParent = buildTraceParent(
+                                currentSpan.context().traceId(),
+                                currentSpan.context().spanId()
+                        );
+                        request.getHeaders().set("traceparent", traceParent);
+                    }
+
+                    return requestInterceptor.intercept(request, body, execution);
+                })
                 .build();
     }
 

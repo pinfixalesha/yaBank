@@ -23,3 +23,11 @@ eureka:
   client:
     serviceUrl:
       defaultZone: ${EUREKA_ZONE}
+
+management:
+  zipkin:
+    tracing:
+      endpoint:  {ZIPKIN_SERVER_URL}
+  tracing:
+    sampling:
+      probability: 1

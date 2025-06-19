@@ -40,3 +40,11 @@ eureka:
       defaultZone: ${EUREKA_ZONE}
 ya-bank:
   gateway: ${GATEWAY_SERVER_URL}
+
+management:
+  zipkin:
+    tracing:
+      endpoint:  {ZIPKIN_SERVER_URL}
+  tracing:
+    sampling:
+      probability: 1

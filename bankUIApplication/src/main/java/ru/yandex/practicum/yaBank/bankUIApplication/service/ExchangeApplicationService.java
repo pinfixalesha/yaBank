@@ -1,5 +1,6 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -17,13 +18,14 @@ import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class ExchangeApplicationService {
 
     @Autowired
-    private RestClient restClient;
+    private final RestClient restClient;
 
     @Autowired
-    private String exchangeApplicationUrl;
+    private final String exchangeApplicationUrl;
 
     @Retryable(
         value = {ResourceAccessException.class}, // Повторять при ошибках соединения

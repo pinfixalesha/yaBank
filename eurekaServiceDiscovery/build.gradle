@@ -29,6 +29,12 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:4.2.1'
 	implementation 'org.springframework.cloud:spring-cloud-starter-config:4.2.1'
 
+	//zipkin
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+	//grafana
+	implementation 'io.micrometer:micrometer-registry-prometheus:1.15.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 

@@ -48,3 +48,11 @@ ya-bank:
 logging:
   level:
     liquibase: DEBUG
+
+management:
+  zipkin:
+    tracing:
+      endpoint:  {ZIPKIN_SERVER_URL}
+  tracing:
+    sampling:
+      probability: 1
