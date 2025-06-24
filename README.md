@@ -34,6 +34,7 @@
 - **Cистема сбора и анализа метрик**: система сбора и анализа метрик Prometheus
 ![Prometheus_screen2.png](Prometheus_screen2.png)
 ![Prometheus_screen1.png](Prometheus_screen1.png)
+![Prometheus_screen3.png](Prometheus_screen3.png)
 
 ## Структура микросервисов
 
