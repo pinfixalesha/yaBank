@@ -1,7 +1,9 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.HttpResponseDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.dto.UserDto;
 import ru.yandex.practicum.yaBank.bankUIApplication.service.AccountApplicationService;
+import org.springframework.beans.factory.annotation.Value;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,10 +24,17 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequiredArgsConstructor
 public class LoginController {
 
     @Autowired
-    private AccountApplicationService accountApplicationService;
+    private final MeterRegistry meterRegistry;
+
+    @Value("${metricsEnabled:true}")
+    private boolean metricsEnabled;
+
+    @Autowired
+    private final AccountApplicationService accountApplicationService;
 
     @GetMapping("/login")
     public String showLoginPage() {
@@ -75,6 +86,7 @@ public class LoginController {
 
         // Если есть ошибки, возвращаем форму регистрации с сообщениями об ошибках
         if (!errors.isEmpty()) {
+            if (metricsEnabled) meterRegistry.counter("user_login", "login", login, "status", "failure").increment();
             attributes.put("errors", errors);
             model.addAllAttributes(attributes);
             return "signup";
@@ -93,12 +105,14 @@ public class LoginController {
         HttpResponseDto httpResponseDto=accountApplicationService.registerUser(userDto);
 
         if (!httpResponseDto.getStatusCode().equals("0")) {
+            if (metricsEnabled) meterRegistry.counter("user_login", "login", login, "status", "failure").increment();
             errors.add(httpResponseDto.getStatusMessage());
             attributes.put("errors", errors);
             model.addAllAttributes(attributes);
             return "signup";
         }
 
+        if (metricsEnabled) meterRegistry.counter("user_login", "login", login, "status", "success").increment();
         return "redirect:/login?registeredSuccess";
     }
 }

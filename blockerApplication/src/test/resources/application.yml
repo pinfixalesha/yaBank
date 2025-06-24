@@ -22,3 +22,5 @@ eureka:
     enabled: false
 server:
   port: 8081
+
+metricsEnabled: false

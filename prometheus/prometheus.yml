@@ -1,0 +1,67 @@
+rule_files:
+  - "/etc/prometheus/alerting_rules.yml"
+
+scrape_configs:
+  - job_name: 'accounts-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'accounts-application:8083' ]
+        labels:
+          application: 'accounts-application'
+
+  - job_name: 'bank-ui-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'bank-ui-application:8080' ]
+        labels:
+          application: 'bank-ui-application'
+
+  - job_name: 'blocker-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'blocker-application:8085' ]
+        labels:
+          application: 'blocker-application'
+
+  - job_name: 'cash-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'cash-application:8092' ]
+        labels:
+          application: 'cash-application'
+
+  - job_name: 'exchange-generator-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'exchange-generator-application:8091' ]
+        labels:
+          application: 'exchange-generator-application'
+
+  - job_name: 'exchange-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'exchange-application:8087' ]
+        labels:
+          application: 'exchange-application'
+
+  - job_name: 'notifications-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'notifications-application:8081' ]
+        labels:
+          application: 'notifications-application'
+
+  - job_name: 'transfer-application'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'transfer-application:8093' ]
+        labels:
+          application: 'transfer-application'

@@ -1,6 +1,9 @@
 package ru.yandex.practicum.yaBank.bankUIApplication.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,20 +28,27 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
 
     @Autowired
-    private AccountApplicationService accountApplicationService;
+    private final AccountApplicationService accountApplicationService;
 
     @Autowired
-    private CashApplicationService cashApplicationService;
+    private final CashApplicationService cashApplicationService;
 
     @Autowired
-    private TransferApplicationService transferApplicationService;
+    private final TransferApplicationService transferApplicationService;
 
     @Autowired
-    private MainController mainController;
+    private final MainController mainController;
+
+    @Autowired
+    private final MeterRegistry meterRegistry;
+
+    @Value("${metricsEnabled:true}")
+    private boolean metricsEnabled;
 
     @PostMapping("/{login}/editPassword")
     @Secured("ROLE_USER")
@@ -208,6 +218,17 @@ public class UserController {
                 model.addAttribute("transferOtherIsOK", true);
             }
         } else {
+            if (metricsEnabled) {
+                meterRegistry.counter("bank_operation_transfer_errors_total",
+                                "from_login", transferOperationDto.getFromLogin(),
+                                "to_login", transferOperationDto.getToLogin(),
+                                "from_currency", transferOperationDto.getFromCurrency(),
+                                "to_currency", transferOperationDto.getToCurrency(),
+                                "type", transferOperationDto.getToLogin().equals(transferOperationDto.getFromLogin()) ? "own" : "external",
+                                "reason", httpResponseDto.getStatusMessage())
+                        .increment();
+            }
+
             if (transferOperationDto.getToLogin().equals(transferOperationDto.getFromLogin())) {
                 model.addAttribute("transferErrors",
                         List.of("Ошибка операции: " + httpResponseDto.getStatusMessage()));

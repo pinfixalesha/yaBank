@@ -1,5 +1,9 @@
 package ru.yandex.practicum.yaBank.blockerApplication.controller;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,8 +18,15 @@ import ru.yandex.practicum.yaBank.blockerApplication.dto.HttpResponseDto;
 import java.util.Random;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/blocker")
 public class BlockerController {
+
+    @Autowired
+    private final MeterRegistry meterRegistry;
+
+    @Value("${metricsEnabled:true}")
+    private boolean metricsEnabled;
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
@@ -23,6 +34,7 @@ public class BlockerController {
     public HttpResponseDto checkBlocker(@RequestBody BlockerDto blockerDto) {
         Random random = new Random();
         if ((random.nextInt(100)>90)&&(!blockerDto.getCurrency().equals("XXX"))) {
+            if (metricsEnabled) meterRegistry.counter("blocker_operation").increment();
             return HttpResponseDto.builder()
                     .statusMessage("Operation denied")
                     .statusCode("998")

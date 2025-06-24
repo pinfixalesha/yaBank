@@ -22,6 +22,8 @@ spring:
         provider:
           keycloak:
             token-uri: ${KEYCLOAK_TOKEN_URL}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     producer:
       bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -46,7 +48,7 @@ ya-bank:
 management:
   zipkin:
     tracing:
-      endpoint:  {ZIPKIN_SERVER_URL}
+      endpoint: ${ZIPKIN_SERVER_URL}
   tracing:
     sampling:
       probability: 1

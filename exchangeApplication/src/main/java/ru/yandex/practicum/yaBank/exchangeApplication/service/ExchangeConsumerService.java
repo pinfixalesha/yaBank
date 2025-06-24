@@ -1,9 +1,11 @@
 package ru.yandex.practicum.yaBank.exchangeApplication.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,12 @@ public class ExchangeConsumerService {
     @Autowired
     private final RatesMapper ratesMapper;
 
+    @Autowired
+    private final MeterRegistry meterRegistry;
+
+    @Value("${metricsEnabled:true}")
+    private boolean metricsEnabled;
+
     @KafkaListener(topics = "exchange", groupId = "currency-rate-group")
     public void consumeRate(List<LinkedHashMap> currencyRate) {
         log.info("Получено сообщение из топика 'exchange', количество курсов: {}", currencyRate.size());
@@ -35,5 +43,6 @@ public class ExchangeConsumerService {
                 .collect(Collectors.toList());
 
         ratesService.saveRates(currencyRateDtos);
+        if (metricsEnabled) meterRegistry.counter("currency_rates_get").increment();
     }
 }

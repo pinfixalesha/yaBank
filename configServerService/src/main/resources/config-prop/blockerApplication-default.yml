@@ -27,7 +27,7 @@ eureka:
 management:
   zipkin:
     tracing:
-      endpoint:  {ZIPKIN_SERVER_URL}
+      endpoint: ${ZIPKIN_SERVER_URL}
   tracing:
     sampling:
       probability: 1

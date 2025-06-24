@@ -32,3 +32,5 @@ server:
   port: 8081
 ya-bank:
   gateway: http://localhost:8084/
+
+metricsEnabled: false

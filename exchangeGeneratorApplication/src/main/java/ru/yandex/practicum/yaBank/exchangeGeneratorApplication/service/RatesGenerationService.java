@@ -1,7 +1,9 @@
 package ru.yandex.practicum.yaBank.exchangeGeneratorApplication.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.yaBank.exchangeGeneratorApplication.dto.CurrencyRateDto;
@@ -27,6 +29,12 @@ public class RatesGenerationService {
     @Autowired
     private final ExchangeProducer exchangeProducer;
 
+    @Autowired
+    private final MeterRegistry meterRegistry;
+
+    @Value("${metricsEnabled:true}")
+    private boolean metricsEnabled;
+
     private static final Random random = new Random();
 
     @Scheduled(fixedRate = 10000)
@@ -37,8 +45,10 @@ public class RatesGenerationService {
         //HttpResponseDto response = exchangeApplicationService.sendRates(currencyRateDtos);
         if (response!=null) {
             log.info("Результат отправки " + response.getStatusCode() + " " + response.getStatusMessage());
+            if (metricsEnabled) meterRegistry.counter("currency_rates_send_ok").increment();
         } else {
             log.info("Результат отправки null");
+            if (metricsEnabled) meterRegistry.counter("currency_rates_send_error").increment();
         }
     }
 

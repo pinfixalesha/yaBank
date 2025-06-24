@@ -1,0 +1,66 @@
+groups:
+  - name: bank-transfer-failure-alerts
+    rules:
+      - alert: HighFailedTransferAttempts
+        expr: increase(bank_operation_transfer_errors_total[1m]) > 2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Частые неуспешные переводы от пользователя {{ $labels.from_login }}"
+          description: "Пользователь {{ $labels.from_login }} совершил более 2 неуспешных переводов за последнюю минуту"
+
+  - name: user-login-alerts
+    rules:
+      - alert: HighFailedLogins
+        expr: sum(user_login_total{status="failure"}) by (login) > 3
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Слишком большое количество попыток входа для пользователя {{ $labels.login }}"
+          description: "Пользователь {{ $labels.login }} неудачно пытался войти более 3 раз за последнюю минуту"
+
+  - name: bank-ui-rates-duration
+    rules:
+      - alert: HighLatencyBankUIRates
+        expr: max_over_time(bank_ui_get_rates_duration_seconds_max[1m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокая задержка при получении курсов валют в UI"
+          description: "Максимальное время получения курсов превышает 0.1 секунды в течение 1 минуты"
+
+  - name: blocker-operation-check
+    rules:
+      - alert: HighOperationBlocking
+        expr: rate(blocker_operation[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Высокая частота блокировки операций"
+          description: "Частота блокировки операций превышает 0.1 в минуту в течение более 2 минут — возможно нештатная ситуация"
+
+  - name: currency-rates-check-get
+    rules:
+      - alert: CurrencyRatesNotUpdated
+        expr: increase(currency_rates_get_total[1m]) < 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Сервис не получает Курсы валют более минуты"
+          description: "Сервис не получает Курсы валют более минуты — проверьте Kafka"
+
+  - name: currency-rates-check-send
+    rules:
+      - alert: CurrencyRatesNotUpdated
+        expr: increase(currency_rates_send_error_total[1m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Не удалось отправить Курсы валют"
+          description: "Не удалось отправить Курсы валют в течении более минуты"

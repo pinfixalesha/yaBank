@@ -28,7 +28,13 @@
 - **Apache Kafka**: Взаимодействие с микросервисом Notifications, Exchange с использованием платформы Apache Kafka
 ![kafka_screen1.png](kafka_screen1.png)
 ![kafka_screen2.png](kafka_screen2.png)
-- 
+- **Трейсинг запросов**: Система распределённых трассировок Zipkin
+![Zipkin_screen1.png](Zipkin_screen1.png)
+![Zipkin_screen2.png](Zipkin_screen2.png)
+- **Cистема сбора и анализа метрик**: система сбора и анализа метрик Prometheus
+![Prometheus_screen2.png](Prometheus_screen2.png)
+![Prometheus_screen1.png](Prometheus_screen1.png)
+
 ## Структура микросервисов
 
 1. **Front UI** — Веб-интерфейс приложения.
@@ -347,3 +353,19 @@ Jenkins будет доступен по адресу: [http://localhost:8080](h
 cd jenkins
 ./nuke-all.sh
 ```
+
+## Локальный запуск без контейнеризации
+
+Добавляем в hosts
+```bash
+127.0.0.1 accounts-application
+127.0.0.1 bank-ui-application
+127.0.0.1 blocker-application
+127.0.0.1 cash-application
+127.0.0.1 exchange-generator-application
+127.0.0.1 exchange-application
+127.0.0.1 notifications-application
+127.0.0.1 transfer-application
+```
+
+

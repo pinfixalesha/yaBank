@@ -23,6 +23,7 @@ spring:
           keycloak:
             token-uri: http://localhost:8282/realms/yabank/protocol/openid-connect/token
   kafka:
+    bootstrap-servers: pinyaev.kafka.ru:9092
     producer:
       bootstrap-servers: pinyaev.kafka.ru:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -47,7 +48,7 @@ ya-bank:
 management:
   zipkin:
     tracing:
-      endpoint:  http://localhost:9411/api/v2/spans
+      endpoint: http://localhost:9411/api/v2/spans
   tracing:
     sampling:
       probability: 1

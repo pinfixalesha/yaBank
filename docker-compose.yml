@@ -7,8 +7,9 @@ services:
       - "${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}"
     environment:
       CONFIG_SERVER_PORT: ${CONFIG_SERVER_PORT}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     networks:
-      - postgres_network
+      - kafka
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:${CONFIG_SERVER_PORT}/actuator/health"]
       interval: 10s
@@ -24,6 +25,7 @@ services:
     environment:
       EUREKA_SERVER_PORT: ${EUREKA_SERVER_PORT}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -33,7 +35,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - postgres_network
+      - kafka
 
   notifications-application:
     build:
@@ -52,6 +54,8 @@ services:
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -60,7 +64,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   accounts-application:
     build:
@@ -78,6 +82,8 @@ services:
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -86,7 +92,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   bank-ui-application:
     build:
@@ -101,6 +107,8 @@ services:
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -109,7 +117,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   blocker-application:
     build:
@@ -124,6 +132,8 @@ services:
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -132,7 +142,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   exchange-application:
     build:
@@ -150,6 +160,8 @@ services:
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -158,7 +170,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   exchange-generator-application:
     build:
@@ -173,6 +185,8 @@ services:
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -181,7 +195,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   cash-application:
     build:
@@ -196,6 +210,8 @@ services:
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -204,7 +220,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   transfer-application:
     build:
@@ -219,6 +235,8 @@ services:
       KEYCLOAK_TOKEN_URL: ${KEYCLOAK_TOKEN_URL}
       KEYCLOAK_ISSUER_URL: ${KEYCLOAK_ISSUER_URL}
       GATEWAY_SERVER_URL: ${GATEWAY_SERVER_URL}
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -227,7 +245,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   gateway-service:
     build:
@@ -239,6 +257,7 @@ services:
       GATEWAY_SERVER_PORT: ${GATEWAY_SERVER_PORT}
       EUREKA_ZONE: ${EUREKA_ZONE}
       CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      ZIPKIN_SERVER_URL: ${ZIPKIN_SERVER_URL}
     depends_on:
       configserver:
         condition: service_healthy
@@ -247,7 +266,7 @@ services:
       postgres-db:
         condition: service_healthy
     networks:
-      - postgres_network
+      - kafka
 
   postgres-db:
     image: postgres
@@ -267,7 +286,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      postgres_network:
+      - kafka
 
   redis:
     image: redis:latest
@@ -278,7 +297,7 @@ services:
     volumes:
       - .redis_data:/data
     networks:
-      - postgres_network
+      - kafka
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.1
@@ -294,7 +313,7 @@ services:
     ports:
       - "8282:8080" # Порт Keycloak изменен на 8282
     networks:
-      - postgres_network
+      - kafka
     command:
       - start-dev --import-realm
 
@@ -341,38 +360,40 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
       KAFKA_TOPIC: zipkin
     networks:
-      - postgres_network
       - kafka
 
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
-    restart: unless-stopped
+    hostname: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus:/etc/prometheus/
     ports:
       - "9090:9090"
-    volumes:
-      - ./prometheus:/etc/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
     networks:
-      - postgres_network
       - kafka
 
   grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana_data:/var/lib/grafana
+    image: grafana/grafana
+    user: root
     depends_on:
       - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    container_name: grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
     networks:
-      - postgres_network
       - kafka
 
 networks:
@@ -380,4 +401,3 @@ networks:
     driver: bridge
     name: kafka
     external: true
-  postgres_network:
