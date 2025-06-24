@@ -39,6 +39,7 @@ data:
           properties:
             acks: all
         listener:
+          observation-enabled: true
           ack-mode: RECORD
         admin:
           client-id: yandex-practicum

@@ -13,6 +13,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.yandex.practicum.yaBank.notificationsApplication.dto.NotificationDto;
 
+import java.util.List;
+
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,7 +30,9 @@ public class KafkaConfig {
                 new StringSerializer(),
                 new JsonSerializer<NotificationDto>()
         );
-        return new KafkaTemplate<>(producerFactory);
+        KafkaTemplate<String, NotificationDto> kafkaTemplate=new KafkaTemplate<>(producerFactory);
+        kafkaTemplate.setObservationEnabled(true);
+        return kafkaTemplate;
     }
 
     @Bean

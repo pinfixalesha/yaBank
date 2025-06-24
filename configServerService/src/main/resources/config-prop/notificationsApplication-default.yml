@@ -27,6 +27,7 @@ spring:
       properties:
         spring.json.trusted.packages: ru.yandex.practicum.yaBank.notificationsApplication.dto
     listener:
+      observation-enabled: true
       ack-mode: RECORD
     admin:
       client-id: yandex-practicum
@@ -52,3 +53,11 @@ management:
   tracing:
     sampling:
       probability: 1
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true

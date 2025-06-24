@@ -68,3 +68,11 @@ management:
   tracing:
     sampling:
       probability: 1
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true

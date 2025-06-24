@@ -13,7 +13,8 @@ exchange-application:
     type: ClusterIP
     port: 8087
   kafka:
-    url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+    url: "http://{{.Release.Name}}-kafka-broker-0.{{.Release.Name}}-kafka-broker-headless.{{.Release.Namespace}}.svc.cluster.local:9092"
+    #url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
@@ -83,7 +84,8 @@ exchange-generator-application:
     type: ClusterIP
     port: 8091
   kafka:
-    url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+    url: "http://{{.Release.Name}}-kafka-broker-0.{{.Release.Name}}-kafka-broker-headless.{{.Release.Namespace}}.svc.cluster.local:9092"
+    #url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
@@ -128,7 +130,8 @@ notifications-application:
             pathType: ImplementationSpecific
     tls: [ ]
   kafka:
-    url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+    url: "http://{{.Release.Name}}-kafka-broker-0.{{.Release.Name}}-kafka-broker-headless.{{.Release.Namespace}}.svc.cluster.local:9092"
+    #url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
@@ -164,7 +167,8 @@ accounts-application:
             pathType: ImplementationSpecific
     tls: [ ]
   kafka:
-    url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+    url: "http://{{.Release.Name}}-kafka-broker-0.{{.Release.Name}}-kafka-broker-headless.{{.Release.Namespace}}.svc.cluster.local:9092"
+    #url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
@@ -202,7 +206,8 @@ cash-application:
             pathType: ImplementationSpecific
     tls: [ ]
   kafka:
-    url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+    url: "http://{{.Release.Name}}-kafka-broker-0.{{.Release.Name}}-kafka-broker-headless.{{.Release.Namespace}}.svc.cluster.local:9092"
+    #url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
@@ -237,7 +242,8 @@ transfer-application:
             pathType: ImplementationSpecific
     tls: [ ]
   kafka:
-    url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+    url: "http://{{.Release.Name}}-kafka-broker-0.{{.Release.Name}}-kafka-broker-headless.{{.Release.Namespace}}.svc.cluster.local:9092"
+    #url: "http://yabank-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
   keycloak:
     issuer_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank"
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"

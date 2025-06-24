@@ -32,7 +32,9 @@ public class KafkaConfig {
                 new StringSerializer(),
                 new JsonSerializer<>(new TypeReference<List<CurrencyRateDto>>() {})
         );
-        return new KafkaTemplate<>(producerFactory);
+        KafkaTemplate<String, List<CurrencyRateDto>> kafkaTemplate=new KafkaTemplate<>(producerFactory);
+        kafkaTemplate.setObservationEnabled(true);
+        return kafkaTemplate;
     }
 
     @Bean
