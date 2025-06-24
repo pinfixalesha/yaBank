@@ -35,6 +35,10 @@
 ![Prometheus_screen2.png](Prometheus_screen2.png)
 ![Prometheus_screen1.png](Prometheus_screen1.png)
 ![Prometheus_screen3.png](Prometheus_screen3.png)
+- **Платформа для визуализации, мониторинга и анализа данных**: Grafana
+![grafana_screen1.png](grafana_screen1.png)
+![grafana_screen2.png](grafana_screen2.png)
+
 
 ## Структура микросервисов
 
