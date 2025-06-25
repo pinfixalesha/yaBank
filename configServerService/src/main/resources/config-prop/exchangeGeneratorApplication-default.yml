@@ -31,6 +31,8 @@ spring:
       client-id: yandex-practicum
     properties:
       security.protocol: PLAINTEXT
+    template:
+      observation-enabled: true
 server:
   port: ${EXCHANGE_GENEGATOR_SERVER_PORT}
 eureka:
