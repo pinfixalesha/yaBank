@@ -1,0 +1,24 @@
+{
+  "index_patterns": ["logs-*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "@version": { "type": "keyword" },
+        "message": { "type": "text"  },
+        "timestamp": { "type": "date",  "format": "yyyy-MM-dd HH:mm:ss.SSS" },
+        "thread": { "type": "keyword"  },
+        "level": { "type": "keyword"  },
+        "logger": { "type": "keyword"  },
+        "line": { "type": "integer"  },
+        "traceId": { "type": "keyword"  },
+        "spanId": { "type": "keyword" },
+        "service_name": { "type": "keyword"  }
+      }
+    }
+  }
+}

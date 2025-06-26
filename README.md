@@ -307,6 +307,13 @@ kubectl get endpoints yabank-exchange-application
 kubectl get events -n default
 ```
 
+## Elasticsearch
+### Проверка шаблона после запуска
+http://localhost:9200/_index_template/logs_template?pretty
+
+### Проверка созданных индексов в Elasticsearch
+http://localhost:9200/_cat/indices?v
+
 ### Безопасность
 
 - В проекте реализована система аутентификации и авторизации с использованием Spring Security.

@@ -5,7 +5,7 @@
             <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %X{traceId}:%X{spanId} exchangeApplication %msg%n"/>
         </Console>
         <Kafka name="Kafka" syncSend="false" topic="logs-topic">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %X{traceId}:%X{spanId} exchangeApplication %msg%n"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %level %logger - %X{traceId}:%X{spanId} exchangeApplication %msg"/>
             <Property name="bootstrap.servers">${env:KAFKA_BOOTSTRAP_SERVERS:-pinyaev.kafka.ru:9092}</Property>
             <Property name="acks">all</Property>
             <Property name="linger.ms">1000</Property>
