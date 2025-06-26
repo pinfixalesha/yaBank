@@ -1,6 +1,8 @@
 package ru.yandex.practicum.yaBank.accountsApplication.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.yaBank.accountsApplication.dto.AccountDto;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountsService {
 
+    private static final Logger log = LoggerFactory.getLogger(AccountsService.class);
+
     @Autowired
     private final UsersRepository usersRepository;
 
@@ -40,6 +44,7 @@ public class AccountsService {
     private static final Random random = new Random();
 
     public Long addAccount(AccountRequestDto accountRequestDto) {
+        log.info("Добавление счета "+accountRequestDto.getCurrency()+" клиенту "+accountRequestDto.getLogin());
         User user = usersRepository.findUserByLogin(accountRequestDto.getLogin()).orElse(null);
         if (user == null) {
             throw new RuntimeException("Пользователь с логином " + accountRequestDto.getLogin() + " не зарегистрирован");
@@ -79,6 +84,7 @@ public class AccountsService {
     }
 
     public void cashIn(AccountOperationDto accountOperationDto) {
+        log.info("Пополнение счета "+accountOperationDto.getCurrency()+" клиенту "+accountOperationDto.getLogin());
         User user = usersRepository.findUserByLogin(accountOperationDto.getLogin()).orElse(null);
         if (user == null) {
             throw new RuntimeException("Пользователь с логином " + accountOperationDto.getLogin() + " не зарегистрирован");
@@ -96,6 +102,7 @@ public class AccountsService {
     }
 
     public void cashOut(AccountOperationDto accountOperationDto) {
+        log.info("Списание со счета "+accountOperationDto.getCurrency()+" клиенту "+accountOperationDto.getLogin());
         User user = usersRepository.findUserByLogin(accountOperationDto.getLogin()).orElse(null);
         if (user == null) {
             throw new RuntimeException("Пользователь с логином " + accountOperationDto.getLogin() + " не зарегистрирован");

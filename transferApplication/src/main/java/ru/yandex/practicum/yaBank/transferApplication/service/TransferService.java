@@ -1,6 +1,8 @@
 package ru.yandex.practicum.yaBank.transferApplication.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.yaBank.transferApplication.dto.AccountOperationDto;
@@ -15,6 +17,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TransferService {
+
+    private static final Logger log = LoggerFactory.getLogger(TransferService.class);
 
     @Autowired
     private final AccountApplicationService accountApplicationService;
@@ -74,7 +78,8 @@ public class TransferService {
         }
 
         //Конвертация суммы, если валюты различаются
-        double convertedAmount = convertAmount(fromCurrency, toCurrency, amount);;
+        double convertedAmount = convertAmount(fromCurrency, toCurrency, amount);
+        ;
 
         //Зачисление средств на счет получателя
         AccountOperationDto cashInDto = AccountOperationDto.builder()
@@ -131,6 +136,9 @@ public class TransferService {
         double fromBuyRate = fromRate.get().getBuy(); // Курс продажи fromCurrency
         double toSaleRate = toRate.get().getSale();       // Курс покупки toCurrency
 
-        return (amount * fromBuyRate) / toSaleRate;
+        double result = (amount * fromBuyRate) / toSaleRate;
+        log.info("Сумма конвертации с " + fromCurrency + " в " + toCurrency + " суммы " + amount + "составляет " + result);
+
+        return result;
     }
 }

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.yaBank.cashApplication.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +19,8 @@ import ru.yandex.practicum.yaBank.cashApplication.dto.HttpResponseDto;
 @Service
 public class AccountApplicationService {
 
+    private static final Logger log = LoggerFactory.getLogger(AccountApplicationService.class);
+
     @Autowired
     private RestClient restClient;
 
@@ -29,6 +33,7 @@ public class AccountApplicationService {
             backoff = @Backoff(delay = 1000)        // Задержка между попытками (в миллисекундах)
     )
     public HttpResponseDto cashIn(AccountOperationDto accountOperationDto) {
+        log.info("Пополнение счета "+accountOperationDto.getCurrency()+" клиенту "+accountOperationDto.getLogin());
         try {
             return restClient.put()
                     .uri(accountApplicationUrl+"/account/cashIn")
@@ -37,6 +42,7 @@ public class AccountApplicationService {
                     .retrieve()
                     .body(HttpResponseDto.class);
         } catch (Exception e) {
+            log.error("Проблемы пополнение счета "+accountOperationDto.getCurrency()+" клиенту "+accountOperationDto.getLogin(),e);
             return HttpResponseDto.builder()
                     .statusCode("500")
                     .statusMessage("Не удалось выполнить операцию. Причина: " + e.getMessage())
@@ -50,6 +56,7 @@ public class AccountApplicationService {
             backoff = @Backoff(delay = 1000)        // Задержка между попытками (в миллисекундах)
     )
     public HttpResponseDto cashOut(AccountOperationDto accountOperationDto) {
+        log.info("Списание со счета "+accountOperationDto.getCurrency()+" клиенту "+accountOperationDto.getLogin());
         try {
             return restClient.put()
                     .uri(accountApplicationUrl+"/account/cashOut")
@@ -58,6 +65,7 @@ public class AccountApplicationService {
                     .retrieve()
                     .body(HttpResponseDto.class);
         } catch (Exception e) {
+            log.error("Проблемы списание со счета "+accountOperationDto.getCurrency()+" клиенту "+accountOperationDto.getLogin(),e);
             return HttpResponseDto.builder()
                     .statusCode("500")
                     .statusMessage("Не удалось выполнить операцию. Причина: " + e.getMessage())
