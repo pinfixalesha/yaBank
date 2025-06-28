@@ -33,6 +33,8 @@ exchange-application:
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -67,6 +69,8 @@ blocker-application:
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -101,6 +105,8 @@ exchange-generator-application:
     tls: [ ]
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -138,6 +144,8 @@ notifications-application:
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -175,6 +183,8 @@ accounts-application:
   config:
     database_url: "jdbc:postgresql://yabank-db.{{ .Release.Namespace }}.svc.cluster.local:5432/yabank"
     database_username: "yabank"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
   resources:
@@ -213,6 +223,8 @@ cash-application:
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -249,6 +261,8 @@ transfer-application:
     token_uri: "http://yabank-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
+  zipkin:
+    url: "http://yabank-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -281,6 +295,8 @@ bank-ui-application:
     tls: [ ]
   gateway:
     service_url: "http://gateway-ingress.yabank.local"
+  zipkin:
+    url: "http://zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
   resources:
     limits:
       memory: "1Gi"
@@ -397,3 +413,160 @@ kafka:
     jmx:
       containerSecurityContext:
         seLinuxOptions: {}
+
+elasticsearch:
+  enabled: true
+
+kibana:
+  enabled: true
+
+logstash:
+  enabled: true
+
+zipkin:
+  enabled: true
+  storageType: mem
+  cassandra:
+    enabled: false
+  self-tracing:
+    enabled: false
+
+kube-prometheus-stack:
+  additionalPrometheusRulesMap:
+    custom-alerts:
+      groups:
+        - name: bank-transfer-failure-alerts
+          rules:
+            - alert: HighFailedTransferAttempts
+              expr: increase(bank_operation_transfer_errors_total[1m]) > 2
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Частые неуспешные переводы от пользователя {{ $labels.from_login }}"
+                description: "Пользователь {{ $labels.from_login }} совершил более 2 неуспешных переводов за последнюю минуту"
+
+        - name: user-login-alerts
+          rules:
+            - alert: HighFailedLogins
+              expr: sum(user_login_total{status="failure"}) by (login) > 3
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Слишком большое количество попыток входа для пользователя {{ $labels.login }}"
+                description: "Пользователь {{ $labels.login }} неудачно пытался войти более 3 раз за последнюю минуту"
+
+        - name: bank-ui-rates-duration
+          rules:
+            - alert: HighLatencyBankUIRates
+              expr: max_over_time(bank_ui_get_rates_duration_seconds_max[1m]) > 0.1
+              for: 2m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Высокая задержка при получении курсов валют в UI"
+                description: "Максимальное время получения курсов превышает 0.1 секунды в течение 1 минуты"
+
+        - name: blocker-operation-check
+          rules:
+            - alert: HighOperationBlocking
+              expr: rate(blocker_operation[5m]) > 0.1
+              for: 2m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Высокая частота блокировки операций"
+                description: "Частота блокировки операций превышает 0.1 в минуту в течение более 2 минут — возможно нештатная ситуация"
+
+        - name: currency-rates-check-get
+          rules:
+            - alert: CurrencyRatesNotUpdated
+              expr: increase(currency_rates_get_total[1m]) < 1
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Сервис не получает Курсы валют более минуты"
+                description: "Сервис не получает Курсы валют более минуты — проверьте Kafka"
+
+        - name: currency-rates-check-send
+          rules:
+            - alert: CurrencyRatesNotUpdated
+              expr: increase(currency_rates_send_error_total[1m]) > 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Не удалось отправить Курсы валют"
+                description: "Не удалось отправить Курсы валют в течении более минуты"
+  prometheus:
+    additionalScrapeConfigs:
+    - job_name: 'accounts-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-accounts-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'accounts-application'
+    - job_name: 'bank-ui-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-bank-ui-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'bank-ui-application'
+    - job_name: 'blocker-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-blocker-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'blocker-application'
+    - job_name: 'cash-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-cash-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'cash-application'
+    - job_name: 'exchange-generator-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-exchange-generator-application.{{ .Release.Namespace }}.svc.cluster.local:8091' ]
+          labels:
+            application: 'exchange-generator-application'
+    - job_name: 'exchange-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-exchange-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'exchange-application'
+    - job_name: 'notifications-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-notifications-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'notifications-application'
+    - job_name: 'transfer-application'
+      metrics_path: '/actuator/prometheus'
+      scrape_interval: 5s
+      static_configs:
+        - targets: [ 'yabank-transfer-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+          labels:
+            application: 'transfer-application'
+    enableEndpointSlice: true
+    prometheusSpec:
+      serviceMonitorSelector: {}
+      podMonitorSelector: {}
+  grafana:
+    enabled: true
+    adminPassword: "admin"
+    service:
+      type: ClusterIP
+  prometheus-node-exporter:
+    hostRootFsMount:
+      enabled: false
