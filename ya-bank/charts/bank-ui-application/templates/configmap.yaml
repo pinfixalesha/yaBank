@@ -36,3 +36,18 @@ data:
     eureka:
       client:
         enabled: false
+    management:
+      zipkin:
+        tracing:
+          endpoint: {{ tpl .Values.zipkin.url . | quote }}
+      tracing:
+        sampling:
+          probability: 1
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      metrics:
+        export:
+          prometheus:
+            enabled: true

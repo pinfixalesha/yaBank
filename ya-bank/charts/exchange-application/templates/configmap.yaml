@@ -44,7 +44,9 @@ data:
         admin:
           client-id: yandex-practicum
         properties:
-          security.protocol: PLAINTEXT              
+          security.protocol: PLAINTEXT
+        template:
+          observation-enabled: true
     server:
       port: {{ .Values.service.port }}
       address: 0.0.0.0
@@ -54,3 +56,18 @@ data:
     logging:
       level:
         liquibase: DEBUG    
+    management:
+      zipkin:
+        tracing:
+          endpoint: {{ tpl .Values.zipkin.url . | quote }}
+      tracing:
+        sampling:
+          probability: 1
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      metrics:
+        export:
+          prometheus:
+            enabled: true

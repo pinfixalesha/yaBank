@@ -130,16 +130,26 @@ git clone https://github.com/pinfixalesha/yaBank.git
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
    kubectl get svc -n ingress-nginx
    ```
-11. Обновление helm чартов
+
+11. Добавление внешних репозитории
+   ```bash
+   helm repo add elastic https://helm.elastic.co
+   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+   helm repo add grafana https://grafana.github.io/helm-charts
+   helm repo add stable https://charts.helm.sh/stable
+   helm repo update
+   ```
+12. Обновление helm чартов
    ```bash
    cd ya-bank
    helm dependency update .
+   helm dependency build
    ```
-12. Запуск
+13. Запуск
    ```bash
    helm install yabank ./
    ```
-13. Доступ к приложени с использованием команды minikube для отображения url приложения  
+14. Доступ к приложени с использованием команды minikube для отображения url приложения  
     ```bash 
     minikube service yabank-bank-ui-application --url
     
@@ -147,7 +157,7 @@ git clone https://github.com/pinfixalesha/yaBank.git
     >! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
     ```
 
-14. После запуска выполним тест helm
+15. После запуска выполним тест helm
     ```bash 
     helm test yabank
     ```

@@ -33,6 +33,7 @@ data:
             jwt:
               issuer-uri: {{ tpl .Values.keycloak.issuer_uri . | quote }}
       kafka:
+        bootstrap-servers: {{ tpl .Values.kafka.url . | quote }}
         producer:
           bootstrap-servers: {{ tpl .Values.kafka.url . | quote }}
           key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -43,6 +44,8 @@ data:
           client-id: yandex-practicum
         properties:
           security.protocol: PLAINTEXT
+        template:
+          observation-enabled: true
     server:
       port: {{ .Values.service.port }}
     ya-bank:
@@ -53,3 +56,18 @@ data:
     logging:
       level:
         liquibase: DEBUG    
+    management:
+      zipkin:
+        tracing:
+          endpoint: {{ tpl .Values.zipkin.url . | quote }}
+      tracing:
+        sampling:
+          probability: 1
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      metrics:
+        export:
+          prometheus:
+            enabled: true

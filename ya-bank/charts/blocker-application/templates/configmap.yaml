@@ -37,3 +37,18 @@ data:
     logging:
       level:
         liquibase: DEBUG    
+    management:
+      zipkin:
+        tracing:
+          endpoint: {{ tpl .Values.zipkin.url . | quote }}
+      tracing:
+        sampling:
+          probability: 1
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+      metrics:
+        export:
+          prometheus:
+            enabled: true        
