@@ -438,7 +438,7 @@ services:
       test: ["CMD-SHELL", "curl -sf http://localhost:9200 | grep -q 'yabank-cluster'"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     networks:
       - kafka
     restart: unless-stopped

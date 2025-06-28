@@ -9,7 +9,7 @@
       "properties": {
         "@timestamp": { "type": "date" },
         "@version": { "type": "keyword" },
-        "message": { "type": "text"  },
+        "message": { "type": "text" },
         "timestamp": { "type": "date",  "format": "yyyy-MM-dd HH:mm:ss.SSS" },
         "thread": { "type": "keyword"  },
         "level": { "type": "keyword"  },

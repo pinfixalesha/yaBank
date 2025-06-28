@@ -1,0 +1,3764 @@
+NAME: yabank
+LAST DEPLOYED: Mon Jun  9 07:55:36 2025
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+HOOKS:
+---
+# Source: ya-bank/charts/accounts-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-accounts-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-accounts-application/actuator/health']
+---
+# Source: ya-bank/charts/bank-ui-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-bank-ui-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-bank-ui-application/actuator/health']
+---
+# Source: ya-bank/charts/blocker-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-blocker-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-blocker-application/actuator/health']
+---
+# Source: ya-bank/charts/cash-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-cash-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-cash-application/actuator/health']
+---
+# Source: ya-bank/charts/exchange-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-exchange-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-exchange-application/actuator/health']
+---
+# Source: ya-bank/charts/notifications-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-notifications-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-notifications-application/actuator/health']
+---
+# Source: ya-bank/charts/transfer-application/templates/test/test.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "yabank-transfer-application-test"
+  annotations:
+    helm.sh/hook: test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: test
+      image: busybox
+      command: [ 'wget' ]
+      args: ['yabank-transfer-application/actuator/health']
+MANIFEST:
+---
+# Source: ya-bank/charts/db/templates/primary/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: yabank-db
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+    app.kubernetes.io/component: primary
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: db
+      app.kubernetes.io/component: primary
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    # Allow dns resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # Allow outbound connections to read-replicas
+    - ports:
+        - port: 5432
+      to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: yabank
+              app.kubernetes.io/name: db
+              app.kubernetes.io/component: read
+  ingress:
+    - ports:
+        - port: 5432
+---
+# Source: ya-bank/charts/kafka/templates/broker/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: yabank-kafka-broker
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/part-of: kafka
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    # Allow client connections
+    - ports:
+        - port: 9092
+        - port: 9094
+        - port: 9095
+---
+# Source: ya-bank/charts/kafka/templates/controller-eligible/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: yabank-kafka-controller
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: kafka
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/part-of: kafka
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    # Allow client connections
+    - ports:
+        - port: 9093
+        - port: 9092
+        - port: 9094
+        - port: 9095
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/primary/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: yabank-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+    app.kubernetes.io/component: primary
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 5432
+---
+# Source: ya-bank/charts/keycloak/templates/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: yabank-keycloak
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: keycloak
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    - ports:
+        - port: 7800
+        - port: 8080
+---
+# Source: ya-bank/charts/kafka/templates/broker/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yabank-kafka-broker
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/part-of: kafka
+---
+# Source: ya-bank/charts/kafka/templates/controller-eligible/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yabank-kafka-controller
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: controller-eligible
+      app.kubernetes.io/part-of: kafka
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/primary/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yabank-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+    app.kubernetes.io/component: primary
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+---
+# Source: ya-bank/charts/keycloak/templates/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yabank-keycloak
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: keycloak
+---
+# Source: ya-bank/charts/accounts-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-accounts-application
+  labels:
+    helm.sh/chart: accounts-application-0.1.0
+    app.kubernetes.io/name: accounts-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/bank-ui-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-bank-ui-application
+  labels:
+    helm.sh/chart: bank-ui-application-0.1.0
+    app.kubernetes.io/name: bank-ui-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/blocker-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-blocker-application
+  labels:
+    helm.sh/chart: blocker-application-0.1.0
+    app.kubernetes.io/name: blocker-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/cash-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-cash-application
+  labels:
+    helm.sh/chart: cash-application-0.1.0
+    app.kubernetes.io/name: cash-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/db/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-db
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+automountServiceAccountToken: false
+---
+# Source: ya-bank/charts/exchange-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-exchange-application
+  labels:
+    helm.sh/chart: exchange-application-0.1.0
+    app.kubernetes.io/name: exchange-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/exchange-generator-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-exchange-generator-application
+  labels:
+    helm.sh/chart: exchange-generator-application-0.1.0
+    app.kubernetes.io/name: exchange-generator-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/kafka/templates/provisioning/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-kafka-provisioning
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+automountServiceAccountToken: false
+---
+# Source: ya-bank/charts/kafka/templates/rbac/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-kafka
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: kafka
+automountServiceAccountToken: false
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+automountServiceAccountToken: false
+---
+# Source: ya-bank/charts/keycloak/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-keycloak
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+automountServiceAccountToken: false
+---
+# Source: ya-bank/charts/notifications-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-notifications-application
+  labels:
+    helm.sh/chart: notifications-application-0.1.0
+    app.kubernetes.io/name: notifications-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/transfer-application/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: yabank-transfer-application
+  labels:
+    helm.sh/chart: transfer-application-0.1.0
+    app.kubernetes.io/name: transfer-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: ya-bank/charts/db/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yabank-db
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+type: Opaque
+data:
+  postgres-password: "MTIzNDU="
+  password: "MTIzNDU2"
+  # We don't auto-generate LDAP password when it's not provided as we do for other passwords
+---
+# Source: ya-bank/charts/kafka/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yabank-kafka-user-passwords
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+type: Opaque
+data:
+  client-passwords: "UXRTak83c3AzQw=="
+  system-user-password: "UXRTak83c3AzQw=="
+---
+# Source: ya-bank/charts/kafka/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yabank-kafka-kraft
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+type: Opaque
+data:
+  cluster-id: "eWFiYW5rLWthZmthLWNsdXN0ZXI="
+  controller-0-id: "RGNNYkRkV09VU25XdVZnd1N1VERjZg=="
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yabank-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+type: Opaque
+data:
+  postgres-password: "c3ZNM2w2ZGxqUg=="
+  password: "SndHQ1VqcGRGSQ=="
+  # We don't auto-generate LDAP password when it's not provided as we do for other passwords
+---
+# Source: ya-bank/charts/keycloak/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: yabank-keycloak
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+type: Opaque
+data:
+  admin-password: "YWRtaW5wYXNzd29yZA=="
+---
+# Source: ya-bank/charts/accounts-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-accounts-application
+  labels:
+    helm.sh/chart: accounts-application-0.1.0
+    app.kubernetes.io/name: accounts-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    spring:
+      application:
+        name: accountsApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        url: "jdbc:postgresql://yabank-db.default.svc.cluster.local:5432/yabank"
+        username: "yabank"
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: none
+        show-sql: true
+      liquibase:
+        enabled: true
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: accounts-service
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+          resourceserver:
+            jwt:
+              issuer-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank"
+      kafka:
+        producer:
+          bootstrap-servers: "http://yabank-kafka.default.svc.cluster.local:9092"
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+          properties:
+            acks: all
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT
+    server:
+      port: 8083
+    ya-bank:
+      gateway: "http://gateway-ingress.yabank.local"
+    eureka:
+      client:
+        enabled: false    
+    logging:
+      level:
+        liquibase: DEBUG
+---
+# Source: ya-bank/charts/bank-ui-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-bank-ui-application
+  labels:
+    helm.sh/chart: bank-ui-application-0.1.0
+    app.kubernetes.io/name: bank-ui-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |  
+    spring:
+      application:
+        name: bankUIApplication
+      cloud:
+        discovery:
+          enabled: false
+        config:
+          enabled: false
+      datasource:
+        initialization-mode: never
+        enabled: false
+      liquibase:
+        enabled: false
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: front-ui
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+    server:
+      port: 8080
+    ya-bank:
+      gateway: "http://gateway-ingress.yabank.local"
+    eureka:
+      client:
+        enabled: false
+---
+# Source: ya-bank/charts/blocker-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-blocker-application
+  labels:
+    helm.sh/chart: blocker-application-0.1.0
+    app.kubernetes.io/name: blocker-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    spring:
+      application:
+        name: blockerApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        url: "jdbc:postgresql://yabank-db.default.svc.cluster.local:5432/yabank"
+        username: "yabank"
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: none
+        show-sql: true
+      liquibase:
+        enabled: true
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank"
+    server:
+      port: 8085
+    eureka:
+      client:
+        enabled: false
+    logging:
+      level:
+        liquibase: DEBUG
+---
+# Source: ya-bank/charts/cash-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-cash-application
+  labels:
+    helm.sh/chart: cash-application-0.1.0
+    app.kubernetes.io/name: cash-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    spring:
+      application:
+        name: cashApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        initialization-mode: never
+        enabled: false
+      liquibase:
+        enabled: false
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: cash-service
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+          resourceserver:
+            jwt:
+              issuer-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank"
+      kafka:
+        producer:
+          bootstrap-servers: "http://yabank-kafka.default.svc.cluster.local:9092"
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+          properties:
+            acks: all
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT
+    server:
+      port: 8092
+    ya-bank:
+      gateway: "http://gateway-ingress.yabank.local"
+    eureka:
+      client:
+        enabled: false    
+    logging:
+      level:
+        liquibase: DEBUG
+---
+# Source: ya-bank/charts/db/templates/primary/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-db-configuration
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+    app.kubernetes.io/component: primary
+data:
+  pg_hba.conf: |
+    # Локальные соединения без пароля - для тестирования, не для прода
+    local   all             all                                     trust
+    host    replication     all                   127.0.0.1/32    md5
+    host    replication     all                   ::1/128         md5
+    host    all             all                   0.0.0.0/0       md5
+    host    all             all                   ::/0            md5
+---
+# Source: ya-bank/charts/exchange-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-exchange-application
+  labels:
+    helm.sh/chart: exchange-application-0.1.0
+    app.kubernetes.io/name: exchange-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    spring:
+      application:
+        name: exchangeApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        url: "jdbc:postgresql://yabank-db.default.svc.cluster.local:5432/yabank"
+        username: "yabank"
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: none
+        show-sql: true
+      liquibase:
+        enabled: true
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank"
+      kafka:
+        bootstrap-servers: "http://yabank-kafka.default.svc.cluster.local:9092"
+        consumer:
+          group-id: currency-rate-group
+          auto-offset-reset: earliest
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+          properties:
+            acks: all
+        listener:
+          ack-mode: RECORD
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT              
+    server:
+      port: 8087
+      address: 0.0.0.0
+    eureka:
+      client:
+        enabled: false
+    logging:
+      level:
+        liquibase: DEBUG
+---
+# Source: ya-bank/charts/exchange-generator-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-exchange-generator-application
+  labels:
+    helm.sh/chart: exchange-generator-application-0.1.0
+    app.kubernetes.io/name: exchange-generator-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |  
+    spring:
+      application:
+        name: exchangeGeneratorApplication
+      cloud:
+        discovery:
+          enabled: false
+        config:
+          enabled: false
+      datasource:
+        initialization-mode: never
+        enabled: false
+      liquibase:
+        enabled: false
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: exchange-generator-service
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+      kafka:
+        producer:
+          bootstrap-servers: "http://yabank-kafka.default.svc.cluster.local:9092"
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+          properties:
+            acks: all
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT
+    server:
+      port: 8091
+    ya-bank:
+      gateway: "http://gateway-ingress.yabank.local"
+    eureka:
+      client:
+        enabled: false
+---
+# Source: ya-bank/charts/kafka/templates/broker/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-kafka-broker-configuration
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+data:
+  server.properties: |-
+    advertised.listeners=CLIENT://advertised-address-placeholder:9092,INTERNAL://advertised-address-placeholder:9094
+    controller.listener.names=CONTROLLER
+    controller.quorum.bootstrap.servers=yabank-kafka-controller-0.yabank-kafka-controller-headless.default.svc.cluster.local:9093
+    inter.broker.listener.name=INTERNAL
+    listener.name.external.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required user_user1="password-placeholder-0";
+    listener.name.external.scram-sha-256.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    listener.name.external.scram-sha-512.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    listener.security.protocol.map=CONTROLLER:PLAINTEXT,CLIENT:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:SASL_PLAINTEXT
+    listeners=CLIENT://:9092,INTERNAL://:9094,EXTERNAL://:9095
+    log.dir=/bitnami/kafka/data
+    logs.dir=/opt/bitnami/kafka/logs
+    process.roles=broker
+    sasl.enabled.mechanisms=PLAIN,SCRAM-SHA-256,SCRAM-SHA-512
+---
+# Source: ya-bank/charts/kafka/templates/controller-eligible/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-kafka-controller-configuration
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+data:
+  server.properties: |-
+    advertised.listeners=CLIENT://advertised-address-placeholder:9092,INTERNAL://advertised-address-placeholder:9094
+    controller.listener.names=CONTROLLER
+    controller.quorum.bootstrap.servers=yabank-kafka-controller-0.yabank-kafka-controller-headless.default.svc.cluster.local:9093
+    inter.broker.listener.name=INTERNAL
+    listener.name.external.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required user_user1="password-placeholder-0";
+    listener.name.external.scram-sha-256.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    listener.name.external.scram-sha-512.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    listener.security.protocol.map=CONTROLLER:PLAINTEXT,CLIENT:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:SASL_PLAINTEXT
+    listeners=CLIENT://:9092,INTERNAL://:9094,EXTERNAL://:9095,CONTROLLER://:9093
+    log.dir=/bitnami/kafka/data
+    logs.dir=/opt/bitnami/kafka/logs
+    process.roles=controller,broker
+    sasl.enabled.mechanisms=PLAIN,SCRAM-SHA-256,SCRAM-SHA-512
+---
+# Source: ya-bank/charts/keycloak/templates/configmap-env-vars.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-keycloak-env-vars
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+data:
+  KC_BOOTSTRAP_ADMIN_USERNAME: "admin"
+  KEYCLOAK_HTTP_PORT: "8080"
+  KEYCLOAK_PROXY_HEADERS: ""
+  KEYCLOAK_ENABLE_STATISTICS: "false"
+  KEYCLOAK_DATABASE_HOST: "yabank-postgresql"
+  KEYCLOAK_DATABASE_PORT: "5432"
+  KEYCLOAK_DATABASE_NAME: "bitnami_keycloak"
+  KEYCLOAK_DATABASE_USER: "bn_keycloak"
+  KEYCLOAK_PRODUCTION: "false"
+  KEYCLOAK_ENABLE_HTTPS: "false"
+  KC_CACHE_TYPE: "ispn"
+  KC_CACHE_STACK: "kubernetes"
+  KC_CACHE_CONFIG_FILE: "cache-ispn.xml"
+  JAVA_OPTS_APPEND: "-Djgroups.dns.query=yabank-keycloak-headless.default.svc.cluster.local"
+  KEYCLOAK_LOG_OUTPUT: "default"
+  KEYCLOAK_LOG_LEVEL: "INFO"
+---
+# Source: ya-bank/charts/notifications-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-notifications-application
+  labels:
+    helm.sh/chart: notifications-application-0.1.0
+    app.kubernetes.io/name: notifications-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    spring:
+      application:
+        name: notificationsApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        url: "jdbc:postgresql://yabank-db.default.svc.cluster.local:5432/yabank"
+        username: "yabank"
+        driver-class-name: org.postgresql.Driver
+      jpa:
+        hibernate:
+          ddl-auto: none
+        show-sql: true
+      liquibase:
+        enabled: true
+      security:
+        oauth2:
+          resourceserver:
+            jwt:
+              issuer-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank"
+      kafka:
+        bootstrap-servers: "http://yabank-kafka.default.svc.cluster.local:9092"
+        consumer:
+          group-id: notify-group
+          auto-offset-reset: earliest
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+          properties:
+            spring.json.trusted.packages: ru.yandex.practicum.yaBank.notificationsApplication.dto
+        listener:
+          ack-mode: RECORD
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT
+    server:
+      port: 8081
+    eureka:
+      client:
+        enabled: false
+    logging:
+      level:
+        liquibase: DEBUG
+---
+# Source: ya-bank/charts/transfer-application/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: yabank-transfer-application
+  labels:
+    helm.sh/chart: transfer-application-0.1.0
+    app.kubernetes.io/name: transfer-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    spring:
+      application:
+        name: transferApplication
+      cloud:
+        discovery:
+          enabled: false        
+        config:
+          enabled: false      
+      datasource:
+        initialization-mode: never
+        enabled: false
+      liquibase:
+        enabled: false
+      security:
+        oauth2:
+          client:
+            registration:
+              service-client:
+                client-id: transfer-service
+                client-secret: dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy
+            provider:
+              keycloak:
+                token-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank/protocol/openid-connect/token"
+          resourceserver:
+            jwt:
+              issuer-uri: "http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank"
+      kafka:
+        producer:
+          bootstrap-servers: "http://yabank-kafka.default.svc.cluster.local:9092"
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+          properties:
+            acks: all
+        admin:
+          client-id: yandex-practicum
+        properties:
+          security.protocol: PLAINTEXT
+    server:
+      port: 8093
+    ya-bank:
+      gateway: "http://gateway-ingress.yabank.local"
+    eureka:
+      client:
+        enabled: false    
+    logging:
+      level:
+        liquibase: DEBUG
+---
+# Source: ya-bank/templates/realm-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm-config
+data:
+  realm-config.json: |
+  
+    {
+      "realm": "yabank",
+      "enabled": true,
+      "attributes": {
+        "frontendUrl": "http://yabank-keycloak.default.svc.cluster.local:8080"
+      },
+      "clients": [
+        {
+          "clientId": "front-ui",
+          "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+          "redirectUris": ["http://localhost:8080/*"],
+          "webOrigins": [],
+          "directAccessGrantsEnabled": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "authorizationServicesEnabled": true,
+          "defaultClientScopes": ["openid", "profile"],
+          "optionalClientScopes": ["accounts.write", "accounts.read", "cash.write", "transfer.write", "exchange.read"]
+        },
+        {
+          "clientId": "accounts-service",
+          "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+          "redirectUris": [],
+          "webOrigins": [],
+          "directAccessGrantsEnabled": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "authorizationServicesEnabled": true,
+          "defaultClientScopes": ["openid", "profile"],
+          "optionalClientScopes": ["notifications.write"]
+        },
+        {
+          "clientId": "cash-service",
+          "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+          "redirectUris": [],
+          "webOrigins": [],
+          "directAccessGrantsEnabled": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "authorizationServicesEnabled": true,
+          "defaultClientScopes": ["openid", "profile"],
+          "optionalClientScopes": ["accounts.read", "blocker.read", "notifications.write"]
+        },
+        {
+          "clientId": "transfer-service",
+          "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+          "redirectUris": [],
+          "webOrigins": [],
+          "directAccessGrantsEnabled": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "authorizationServicesEnabled": true,
+          "defaultClientScopes": ["openid", "profile"],
+          "optionalClientScopes": ["accounts.read", "exchange.read", "blocker.read", "notifications.write"]
+        },
+        {
+          "clientId": "exchange-generator-service",
+          "secret": "dH2ik3GGiu8ubKuyiWu9ZV4Oz9GHg7zy",
+          "redirectUris": [],
+          "webOrigins": [],
+          "directAccessGrantsEnabled": true,
+          "standardFlowEnabled": true,
+          "implicitFlowEnabled": true,
+          "serviceAccountsEnabled": true,
+          "publicClient": false,
+          "authorizationServicesEnabled": true,
+          "defaultClientScopes": ["openid", "profile"],
+          "optionalClientScopes": ["exchange.write"]
+        }
+      ],
+      "clientScopes": [
+        {
+          "name": "accounts.read",
+          "description": "Read access to Accounts service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "accounts.write",
+          "description": "Write access to Accounts service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "cash.write",
+          "description": "Write access to Cash service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "transfer.write",
+          "description": "Write access to Transfer service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "exchange.read",
+          "description": "Read access to Exchange service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "exchange.write",
+          "description": "Write access to Exchange Generator service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "blocker.read",
+          "description": "Blocker service",
+          "protocol": "openid-connect"
+        },
+        {
+          "name": "notifications.write",
+          "description": "Notifications service",
+          "protocol": "openid-connect"
+        }
+      ],
+      "users": [
+        {
+          "username": "admin",
+          "enabled": true,
+          "credentials": [
+            {
+              "type": "password",
+              "value": "adminpassword",
+              "temporary": false
+            }
+          ],
+          "realmRoles": ["admin"]
+        }
+      ]
+    }
+---
+# Source: ya-bank/charts/accounts-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-accounts-application
+spec:
+  selector:
+    app: yabank-accounts-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8083
+      name: http
+---
+# Source: ya-bank/charts/bank-ui-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-bank-ui-application
+spec:
+  selector:
+    app: yabank-bank-ui-application
+  ports:
+    - protocol: TCP
+      port: 80
+      nodePort: 31531
+      targetPort: 8080
+      name: http
+  type: NodePort
+---
+# Source: ya-bank/charts/blocker-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-blocker-application
+spec:
+  selector:
+    app: yabank-blocker-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8085
+      name: http
+---
+# Source: ya-bank/charts/cash-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-cash-application
+spec:
+  selector:
+    app: yabank-cash-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8092
+      name: http
+---
+# Source: ya-bank/charts/db/templates/primary/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-db-hl
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+    app.kubernetes.io/component: primary
+  annotations:
+    # Use this annotation in addition to the actual publishNotReadyAddresses
+    # field below because the annotation will stop being respected soon but the
+    # field is broken in some versions of Kubernetes:
+    # https://github.com/kubernetes/kubernetes/issues/58662
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other Postgresql pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: db
+    app.kubernetes.io/component: primary
+---
+# Source: ya-bank/charts/db/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-db
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+    app.kubernetes.io/component: primary
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: db
+    app.kubernetes.io/component: primary
+---
+# Source: ya-bank/charts/exchange-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-exchange-application
+spec:
+  selector:
+    app: yabank-exchange-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8087
+      name: http
+---
+# Source: ya-bank/charts/exchange-generator-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-exchange-generator-application
+spec:
+  selector:
+    app: yabank-exchange-generator-application
+  ports:
+    - protocol: TCP
+      port: 8091
+      targetPort: 8091
+      name: http
+---
+# Source: ya-bank/charts/kafka/templates/broker/svc-external-access.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-kafka-broker-0-external
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: kafka
+    pod: yabank-kafka-broker-0
+spec:
+  type: ClusterIP
+  publishNotReadyAddresses: false
+  ports:
+    - name: tcp-kafka
+      port: 9094
+      nodePort: null
+      targetPort: external
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+    app.kubernetes.io/component: broker
+    statefulset.kubernetes.io/pod-name: yabank-kafka-broker-0
+---
+# Source: ya-bank/charts/kafka/templates/broker/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-kafka-broker-headless
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-interbroker
+      port: 9094
+      protocol: TCP
+      targetPort: interbroker
+    - name: tcp-client
+      port: 9092
+      protocol: TCP
+      targetPort: client
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+---
+# Source: ya-bank/charts/kafka/templates/controller-eligible/svc-external-access.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-kafka-controller-0-external
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: kafka
+    pod: yabank-kafka-controller-0
+spec:
+  type: ClusterIP
+  publishNotReadyAddresses: false
+  ports:
+    - name: tcp-kafka
+      port: 9094
+      nodePort: null
+      targetPort: external
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+    app.kubernetes.io/component: controller-eligible
+    statefulset.kubernetes.io/pod-name: yabank-kafka-controller-0
+---
+# Source: ya-bank/charts/kafka/templates/controller-eligible/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-kafka-controller-headless
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-interbroker
+      port: 9094
+      protocol: TCP
+      targetPort: interbroker
+    - name: tcp-client
+      port: 9092
+      protocol: TCP
+      targetPort: client
+    - name: tcp-controller
+      protocol: TCP
+      port: 9093
+      targetPort: controller
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+---
+# Source: ya-bank/charts/kafka/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-kafka
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: kafka
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-client
+      port: 9092
+      protocol: TCP
+      targetPort: client
+      nodePort: null
+    - name: tcp-external
+      port: 9095
+      protocol: TCP
+      targetPort: external
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/primary/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-postgresql-hl
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+    app.kubernetes.io/component: primary
+  annotations:
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other Postgresql pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+    app.kubernetes.io/component: primary
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/component: primary
+---
+# Source: ya-bank/charts/keycloak/templates/headless-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-keycloak-headless
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
+---
+# Source: ya-bank/charts/keycloak/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-keycloak
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
+---
+# Source: ya-bank/charts/notifications-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-notifications-application
+spec:
+  selector:
+    app: yabank-notifications-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8081
+      name: http
+---
+# Source: ya-bank/charts/transfer-application/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: yabank-transfer-application
+spec:
+  selector:
+    app: yabank-transfer-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8093
+      name: http
+---
+# Source: ya-bank/charts/accounts-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-accounts-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-accounts-application
+  template:
+    metadata:
+      labels:
+        app: yabank-accounts-application
+    spec:
+      serviceAccountName: yabank-accounts-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: accounts-application
+          image: "accounts-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "yabank"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-accounts-application
+---
+# Source: ya-bank/charts/bank-ui-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-bank-ui-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-bank-ui-application
+  template:
+    metadata:
+      labels:
+        app: yabank-bank-ui-application
+    spec:
+      serviceAccountName: yabank-bank-ui-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: bank-ui-application
+          image: "bank-ui-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8080
+          env:
+            # Указывает Spring искать конфигурацию в /app/config/
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-bank-ui-application
+---
+# Source: ya-bank/charts/blocker-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-blocker-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-blocker-application
+  template:
+    metadata:
+      labels:
+        app: yabank-blocker-application
+    spec:
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: blocker-application
+          image: "blocker-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "yabank"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-blocker-application
+---
+# Source: ya-bank/charts/cash-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-cash-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-cash-application
+  template:
+    metadata:
+      labels:
+        app: yabank-cash-application
+    spec:
+      serviceAccountName: yabank-cash-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: cash-application
+          image: "cash-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8092
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-cash-application
+---
+# Source: ya-bank/charts/exchange-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-exchange-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-exchange-application
+  template:
+    metadata:
+      labels:
+        app: yabank-exchange-application
+    spec:
+      serviceAccountName: yabank-exchange-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: exchange-application
+          image: "exchange-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8087
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "yabank"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-exchange-application
+---
+# Source: ya-bank/charts/exchange-generator-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-exchange-generator-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-exchange-generator-application
+  template:
+    metadata:
+      labels:
+        app: yabank-exchange-generator-application
+    spec:
+      serviceAccountName: yabank-exchange-generator-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: exchange-generator-application
+          image: "exchange-generator-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8091
+          env:
+            # Указывает Spring искать конфигурацию в /app/config/
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-exchange-generator-application
+---
+# Source: ya-bank/charts/notifications-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-notifications-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-notifications-application
+  template:
+    metadata:
+      labels:
+        app: yabank-notifications-application
+    spec:
+      serviceAccountName: yabank-notifications-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: notifications-application
+          image: "notifications-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "yabank"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-notifications-application
+---
+# Source: ya-bank/charts/transfer-application/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yabank-transfer-application
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yabank-transfer-application
+  template:
+    metadata:
+      labels:
+        app: yabank-transfer-application
+    spec:
+      serviceAccountName: yabank-transfer-application
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              until curl -s http://yabank-keycloak.default.svc.cluster.local:8080/realms/yabank > /dev/null; do
+                echo "Waiting for Keycloak...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!"
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+      containers:
+        - name: transfer-application
+          image: "transfer-application:0.0.1-SNAPSHOT"
+          ports:
+            - containerPort: 8093
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: file:///app/config/
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: yabank-transfer-application
+---
+# Source: ya-bank/charts/db/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yabank-db
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: db
+    app.kubernetes.io/version: 16.2.0
+    helm.sh/chart: db-14.2.3
+    app.kubernetes.io/component: primary
+spec:
+  replicas: 1
+  serviceName: yabank-db-hl
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: db
+      app.kubernetes.io/component: primary
+  template:
+    metadata:
+      name: yabank-db
+      labels:
+        app.kubernetes.io/instance: yabank
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: db
+        app.kubernetes.io/version: 16.2.0
+        helm.sh/chart: db-14.2.3
+        app.kubernetes.io/component: primary
+      annotations:
+        checksum/configuration: b78a184b346221d56afec3de8940c8b33ffb60d83cc75db511bbd679a47c1553
+    spec:
+      serviceAccountName: yabank-db
+      
+      automountServiceAccountToken: false
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: yabank
+                    app.kubernetes.io/name: db
+                    app.kubernetes.io/component: primary
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      hostNetwork: false
+      hostIPC: false
+      containers:
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:16.2.0-debian-12-r5
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: false
+            runAsGroup: 0
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            # Authentication
+            - name: POSTGRES_USER
+              value: "yabank"
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: password
+            - name: POSTGRES_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-db
+                  key: postgres-password
+            - name: POSTGRES_DATABASE
+              value: "yabank"
+            # Replication
+            # Initdb
+            # Standby
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: "error"
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: "pgaudit"
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "yabank" -d "dbname=yabank" -h 127.0.0.1 -p 5432
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "yabank" -d "dbname=yabank" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/tmp
+              subPath: app-tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/logs
+              subPath: app-logs-dir
+            - name: dshm
+              mountPath: /dev/shm
+            - name: data
+              mountPath: /bitnami/postgresql
+            - name: postgresql-config
+              mountPath: /bitnami/postgresql/conf
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: postgresql-config
+          configMap:
+            name: yabank-db-configuration
+        - name: dshm
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"
+---
+# Source: ya-bank/charts/kafka/templates/broker/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yabank-kafka-broker
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+spec:
+  podManagementPolicy: Parallel
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/part-of: kafka
+  serviceName: yabank-kafka-broker-headless
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: yabank
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kafka
+        app.kubernetes.io/version: 4.0.0
+        helm.sh/chart: kafka-32.2.13
+        app.kubernetes.io/component: broker
+        app.kubernetes.io/part-of: kafka
+      annotations:
+        checksum/configuration: f404a411cecaf0aabea5d6c2081fb63be2b06269bb791d80cdd233f3986ccaf5
+        checksum/secret: f478ef1f82cc5e99e04fa2bd8d4df928d1c7bc4d74d14d3058e6501db9dbf256
+    spec:
+      
+      automountServiceAccountToken: true
+      hostNetwork: false
+      hostIPC: false
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: yabank
+                    app.kubernetes.io/name: kafka
+                    app.kubernetes.io/component: broker
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        seccompProfile:
+          type: RuntimeDefault
+        supplementalGroups: []
+        sysctls: []
+      serviceAccountName: yabank-kafka
+      enableServiceLinks: true
+      initContainers:
+        
+        - name: prepare-config
+          image: docker.io/bitnami/kafka:4.0.0-debian-12-r7
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: []
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 1024Mi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              . /opt/bitnami/scripts/libkafka.sh
+              configure_external_access() {
+                  local host port
+                  # Configure external hostname
+                  if [[ -f "/shared/external-host.txt" ]]; then
+                      host=$(cat "/shared/external-host.txt")
+                  elif [[ -n "${EXTERNAL_ACCESS_HOST:-}" ]]; then
+                      host="$EXTERNAL_ACCESS_HOST"
+                  elif [[ -n "${EXTERNAL_ACCESS_HOSTS_LIST:-}" ]]; then
+                      read -r -a hosts <<< "$(tr ',' ' ' <<<"${EXTERNAL_ACCESS_HOSTS_LIST}")"
+                      host="${hosts[$POD_ID]}"
+                  elif is_boolean_yes "$EXTERNAL_ACCESS_HOST_USE_PUBLIC_IP"; then
+                      host=$(curl -s https://ipinfo.io/ip)
+                  else
+                      error "External access hostname not provided"
+                  fi
+                  # Configure external port
+                  if [[ -f "/shared/external-port.txt" ]]; then
+                      port=$(cat "/shared/external-port.txt")
+                  elif [[ -n "${EXTERNAL_ACCESS_PORT:-}" ]]; then
+                      port="$EXTERNAL_ACCESS_PORT"
+                      if is_boolean_yes "${EXTERNAL_ACCESS_PORT_AUTOINCREMENT:-}"; then
+                          port="$((port + POD_ID))"
+                      fi
+                  elif [[ -n "${EXTERNAL_ACCESS_PORTS_LIST:-}" ]]; then
+                      read -r -a ports <<<"$(tr ',' ' ' <<<"${EXTERNAL_ACCESS_PORTS_LIST}")"
+                      port="${ports[$POD_ID]}"
+                  else
+                      error "External access port not provided"
+                  fi
+                  # Configure Kafka advertised listeners
+                  sed -i -E "s|^(advertised\.listeners=\S+)$|\1,${EXTERNAL_ACCESS_LISTENER_NAME}://${host}:${port}|" "$KAFKA_CONF_FILE"
+              }
+              configure_kafka_sasl() {
+                  # Replace placeholders with passwords
+                  read -r -a passwords <<< "$(tr ',;' ' ' <<<"${KAFKA_CLIENT_PASSWORDS:-}")"
+                  for ((i = 0; i < ${#passwords[@]}; i++)); do
+                      replace_in_file "$KAFKA_CONF_FILE" "password-placeholder-${i}\"" "${passwords[i]}\""
+                  done
+              }
+        
+              cp /configmaps/server.properties $KAFKA_CONF_FILE
+        
+              # Get pod ID and role, last and second last fields in the pod name respectively
+              POD_ID="${MY_POD_NAME##*-}"
+              POD_ROLE="${MY_POD_NAME%-*}"; POD_ROLE="${POD_ROLE##*-}"
+        
+              # Configure node.id
+              ID=$((POD_ID + KAFKA_MIN_ID))
+              [[ -f "/bitnami/kafka/data/meta.properties" ]] && ID="$(grep "node.id" /bitnami/kafka/data/meta.properties | awk -F '=' '{print $2}')"
+              kafka_server_conf_set "node.id" "$ID"
+              # Configure initial controllers
+              if [[ "controller" =~ "$POD_ROLE" ]]; then
+                  INITIAL_CONTROLLERS=()
+                  for ((i = 0; i < 1; i++)); do
+                      var="KAFKA_CONTROLLER_${i}_DIR_ID"; DIR_ID="${!var}"
+                      [[ $i -eq $POD_ID ]] && [[ -f "/bitnami/kafka/data/meta.properties" ]] && DIR_ID="$(grep "directory.id" /bitnami/kafka/data/meta.properties | awk -F '=' '{print $2}')"
+                      INITIAL_CONTROLLERS+=("${i}@${KAFKA_FULLNAME}-${POD_ROLE}-${i}.${KAFKA_CONTROLLER_SVC_NAME}.${MY_POD_NAMESPACE}.svc.${CLUSTER_DOMAIN}:${KAFKA_CONTROLLER_PORT}:${DIR_ID}")
+                  done
+                  echo "${INITIAL_CONTROLLERS[*]}" | awk -v OFS=',' '{$1=$1}1' > /shared/initial-controllers.txt
+              fi
+              replace_in_file "$KAFKA_CONF_FILE" "advertised-address-placeholder" "${MY_POD_NAME}.${KAFKA_FULLNAME}-${POD_ROLE}-headless.${MY_POD_NAMESPACE}.svc.${CLUSTER_DOMAIN}"
+              configure_external_access
+              sasl_env_vars=(
+                KAFKA_CLIENT_PASSWORDS
+                KAFKA_INTER_BROKER_PASSWORD
+                KAFKA_INTER_BROKER_CLIENT_SECRET
+                KAFKA_CONTROLLER_PASSWORD
+                KAFKA_CONTROLLER_CLIENT_SECRET
+              )
+              for env_var in "${sasl_env_vars[@]}"; do
+                  file_env_var="${env_var}_FILE"
+                  if [[ -n "${!file_env_var:-}" ]]; then
+                      if [[ -r "${!file_env_var:-}" ]]; then
+                          export "${env_var}=$(< "${!file_env_var}")"
+                          unset "${file_env_var}"
+                      else
+                          warn "Skipping export of '${env_var}'. '${!file_env_var:-}' is not readable."
+                      fi
+                  fi
+              done
+              configure_kafka_sasl
+              if [[ -f /secret-config/server-secret.properties ]]; then
+                  cat /secret-config/server-secret.properties >> $KAFKA_CONF_FILE
+              fi
+              
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                    fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KAFKA_FULLNAME
+              value: "yabank-kafka"
+            - name: CLUSTER_DOMAIN
+              value: "cluster.local"
+            - name: KAFKA_VOLUME_DIR
+              value: "/bitnami/kafka"
+            - name: KAFKA_CONF_FILE
+              value: /config/server.properties
+            - name: KAFKA_MIN_ID
+              value: "100"
+            - name: KAFKA_CONTROLLER_SVC_NAME
+              value: yabank-kafka-controller-headless
+            - name: KAFKA_CONTROLLER_PORT
+              value: "9093"
+            - name: KAFKA_CONTROLLER_0_DIR_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-kafka-kraft
+                  key: controller-0-id
+            - name: EXTERNAL_ACCESS_LISTENER_NAME
+              value: "EXTERNAL"
+            - name: EXTERNAL_ACCESS_HOST
+              value: "ingress-ip"
+            - name: EXTERNAL_ACCESS_PORT
+              value: "9094"
+            - name: EXTERNAL_ACCESS_PORT_AUTOINCREMENT
+              value: "true"
+            
+            - name: KAFKA_CLIENT_USERS
+              value: "user1"
+            - name: KAFKA_CLIENT_PASSWORDS_FILE
+              value: /opt/bitnami/kafka/config/secrets/client-passwords
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/kafka
+            - name: kafka-config
+              mountPath: /config
+            - name: kafka-configmaps
+              mountPath: /configmaps
+            - name: kafka-secret-config
+              mountPath: /secret-config
+            - name: tmp
+              mountPath: /tmp
+            - name: init-shared
+              mountPath: /shared
+            - name: kafka-sasl
+              mountPath: /opt/bitnami/kafka/config/secrets
+              readOnly: true
+      containers:
+        - name: kafka
+          image: docker.io/bitnami/kafka:4.0.0-debian-12-r7
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+          env:
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx1024m -Xms1024m"
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: broker
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: KAFKA_KRAFT_CLUSTER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-kafka-kraft
+                  key: cluster-id
+            - name: KAFKA_KRAFT_BOOTSTRAP_SCRAM_USERS
+              value: "true"
+            
+            - name: KAFKA_CLIENT_USERS
+              value: "user1"
+            - name: KAFKA_CLIENT_PASSWORDS_FILE
+              value: /opt/bitnami/kafka/config/secrets/client-passwords
+          ports:
+            - name: client
+              containerPort: 9092
+            - name: interbroker
+              containerPort: 9094
+            - name: external
+              containerPort: 9095
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - pgrep
+                - -f
+                - kafka
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: "client"
+          resources:
+            limits:
+              cpu: 750m
+              ephemeral-storage: 1024Mi
+              memory: 768Mi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 50Mi
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/kafka
+            - name: logs
+              mountPath: /opt/bitnami/kafka/logs
+            - name: kafka-config
+              mountPath: /opt/bitnami/kafka/config/server.properties
+              subPath: server.properties
+            - name: tmp
+              mountPath: /tmp
+            - name: kafka-sasl
+              mountPath: /opt/bitnami/kafka/config/secrets
+              readOnly: true
+      volumes:
+        - name: kafka-configmaps
+          configMap:
+            name: yabank-kafka-broker-configuration
+        - name: kafka-secret-config
+          emptyDir: {}
+        - name: kafka-config
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: init-shared
+          emptyDir: {}
+        - name: kafka-sasl
+          projected:
+            sources:
+              - secret:
+                  name:  yabank-kafka-user-passwords
+        - name: logs
+          emptyDir: {}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "1Gi"
+---
+# Source: ya-bank/charts/kafka/templates/controller-eligible/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yabank-kafka-controller
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.13
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+spec:
+  podManagementPolicy: Parallel
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: controller-eligible
+      app.kubernetes.io/part-of: kafka
+  serviceName: yabank-kafka-controller-headless
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: yabank
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kafka
+        app.kubernetes.io/version: 4.0.0
+        helm.sh/chart: kafka-32.2.13
+        app.kubernetes.io/component: controller-eligible
+        app.kubernetes.io/part-of: kafka
+      annotations:
+        checksum/configuration: db83c39c2328218090c9a4a98696714a2d2a1c531c9c890b2287715cafe67c8f
+        checksum/secret: 67c76c96c88fb0923abbe50d5f732149d7644bcf8b2a4b392ba2aab7cac0f64f
+    spec:
+      
+      automountServiceAccountToken: true
+      hostNetwork: false
+      hostIPC: false
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: yabank
+                    app.kubernetes.io/name: kafka
+                    app.kubernetes.io/component: controller-eligible
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        seccompProfile:
+          type: RuntimeDefault
+        supplementalGroups: []
+        sysctls: []
+      serviceAccountName: yabank-kafka
+      enableServiceLinks: true
+      initContainers:
+        
+        - name: prepare-config
+          image: docker.io/bitnami/kafka:4.0.0-debian-12-r7
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: []
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 1024Mi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              . /opt/bitnami/scripts/libkafka.sh
+              configure_external_access() {
+                  local host port
+                  # Configure external hostname
+                  if [[ -f "/shared/external-host.txt" ]]; then
+                      host=$(cat "/shared/external-host.txt")
+                  elif [[ -n "${EXTERNAL_ACCESS_HOST:-}" ]]; then
+                      host="$EXTERNAL_ACCESS_HOST"
+                  elif [[ -n "${EXTERNAL_ACCESS_HOSTS_LIST:-}" ]]; then
+                      read -r -a hosts <<< "$(tr ',' ' ' <<<"${EXTERNAL_ACCESS_HOSTS_LIST}")"
+                      host="${hosts[$POD_ID]}"
+                  elif is_boolean_yes "$EXTERNAL_ACCESS_HOST_USE_PUBLIC_IP"; then
+                      host=$(curl -s https://ipinfo.io/ip)
+                  else
+                      error "External access hostname not provided"
+                  fi
+                  # Configure external port
+                  if [[ -f "/shared/external-port.txt" ]]; then
+                      port=$(cat "/shared/external-port.txt")
+                  elif [[ -n "${EXTERNAL_ACCESS_PORT:-}" ]]; then
+                      port="$EXTERNAL_ACCESS_PORT"
+                      if is_boolean_yes "${EXTERNAL_ACCESS_PORT_AUTOINCREMENT:-}"; then
+                          port="$((port + POD_ID))"
+                      fi
+                  elif [[ -n "${EXTERNAL_ACCESS_PORTS_LIST:-}" ]]; then
+                      read -r -a ports <<<"$(tr ',' ' ' <<<"${EXTERNAL_ACCESS_PORTS_LIST}")"
+                      port="${ports[$POD_ID]}"
+                  else
+                      error "External access port not provided"
+                  fi
+                  # Configure Kafka advertised listeners
+                  sed -i -E "s|^(advertised\.listeners=\S+)$|\1,${EXTERNAL_ACCESS_LISTENER_NAME}://${host}:${port}|" "$KAFKA_CONF_FILE"
+              }
+              configure_kafka_sasl() {
+                  # Replace placeholders with passwords
+                  read -r -a passwords <<< "$(tr ',;' ' ' <<<"${KAFKA_CLIENT_PASSWORDS:-}")"
+                  for ((i = 0; i < ${#passwords[@]}; i++)); do
+                      replace_in_file "$KAFKA_CONF_FILE" "password-placeholder-${i}\"" "${passwords[i]}\""
+                  done
+              }
+        
+              cp /configmaps/server.properties $KAFKA_CONF_FILE
+        
+              # Get pod ID and role, last and second last fields in the pod name respectively
+              POD_ID="${MY_POD_NAME##*-}"
+              POD_ROLE="${MY_POD_NAME%-*}"; POD_ROLE="${POD_ROLE##*-}"
+        
+              # Configure node.id
+              ID=$((POD_ID + KAFKA_MIN_ID))
+              [[ -f "/bitnami/kafka/data/meta.properties" ]] && ID="$(grep "node.id" /bitnami/kafka/data/meta.properties | awk -F '=' '{print $2}')"
+              kafka_server_conf_set "node.id" "$ID"
+              # Configure initial controllers
+              if [[ "controller" =~ "$POD_ROLE" ]]; then
+                  INITIAL_CONTROLLERS=()
+                  for ((i = 0; i < 1; i++)); do
+                      var="KAFKA_CONTROLLER_${i}_DIR_ID"; DIR_ID="${!var}"
+                      [[ $i -eq $POD_ID ]] && [[ -f "/bitnami/kafka/data/meta.properties" ]] && DIR_ID="$(grep "directory.id" /bitnami/kafka/data/meta.properties | awk -F '=' '{print $2}')"
+                      INITIAL_CONTROLLERS+=("${i}@${KAFKA_FULLNAME}-${POD_ROLE}-${i}.${KAFKA_CONTROLLER_SVC_NAME}.${MY_POD_NAMESPACE}.svc.${CLUSTER_DOMAIN}:${KAFKA_CONTROLLER_PORT}:${DIR_ID}")
+                  done
+                  echo "${INITIAL_CONTROLLERS[*]}" | awk -v OFS=',' '{$1=$1}1' > /shared/initial-controllers.txt
+              fi
+              replace_in_file "$KAFKA_CONF_FILE" "advertised-address-placeholder" "${MY_POD_NAME}.${KAFKA_FULLNAME}-${POD_ROLE}-headless.${MY_POD_NAMESPACE}.svc.${CLUSTER_DOMAIN}"
+              configure_external_access
+              sasl_env_vars=(
+                KAFKA_CLIENT_PASSWORDS
+                KAFKA_INTER_BROKER_PASSWORD
+                KAFKA_INTER_BROKER_CLIENT_SECRET
+                KAFKA_CONTROLLER_PASSWORD
+                KAFKA_CONTROLLER_CLIENT_SECRET
+              )
+              for env_var in "${sasl_env_vars[@]}"; do
+                  file_env_var="${env_var}_FILE"
+                  if [[ -n "${!file_env_var:-}" ]]; then
+                      if [[ -r "${!file_env_var:-}" ]]; then
+                          export "${env_var}=$(< "${!file_env_var}")"
+                          unset "${file_env_var}"
+                      else
+                          warn "Skipping export of '${env_var}'. '${!file_env_var:-}' is not readable."
+                      fi
+                  fi
+              done
+              configure_kafka_sasl
+              if [[ -f /secret-config/server-secret.properties ]]; then
+                  cat /secret-config/server-secret.properties >> $KAFKA_CONF_FILE
+              fi
+              
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                    fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KAFKA_FULLNAME
+              value: "yabank-kafka"
+            - name: CLUSTER_DOMAIN
+              value: "cluster.local"
+            - name: KAFKA_VOLUME_DIR
+              value: "/bitnami/kafka"
+            - name: KAFKA_CONF_FILE
+              value: /config/server.properties
+            - name: KAFKA_MIN_ID
+              value: "0"
+            - name: KAFKA_CONTROLLER_SVC_NAME
+              value: yabank-kafka-controller-headless
+            - name: KAFKA_CONTROLLER_PORT
+              value: "9093"
+            - name: KAFKA_CONTROLLER_0_DIR_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-kafka-kraft
+                  key: controller-0-id
+            - name: EXTERNAL_ACCESS_LISTENER_NAME
+              value: "EXTERNAL"
+            - name: EXTERNAL_ACCESS_HOST
+              value: "ingress-ip"
+            - name: EXTERNAL_ACCESS_PORT
+              value: "9094"
+            - name: EXTERNAL_ACCESS_PORT_AUTOINCREMENT
+              value: "true"
+            
+            - name: KAFKA_CLIENT_USERS
+              value: "user1"
+            - name: KAFKA_CLIENT_PASSWORDS_FILE
+              value: /opt/bitnami/kafka/config/secrets/client-passwords
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/kafka
+            - name: kafka-config
+              mountPath: /config
+            - name: kafka-configmaps
+              mountPath: /configmaps
+            - name: kafka-secret-config
+              mountPath: /secret-config
+            - name: tmp
+              mountPath: /tmp
+            - name: init-shared
+              mountPath: /shared
+            - name: kafka-sasl
+              mountPath: /opt/bitnami/kafka/config/secrets
+              readOnly: true
+      containers:
+        - name: kafka
+          image: docker.io/bitnami/kafka:4.0.0-debian-12-r7
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+          env:
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx1024m -Xms1024m"
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: "controller,broker"
+            - name: KAFKA_INITIAL_CONTROLLERS_FILE
+              value: /shared/initial-controllers.txt
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: KAFKA_KRAFT_CLUSTER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: yabank-kafka-kraft
+                  key: cluster-id
+            - name: KAFKA_KRAFT_BOOTSTRAP_SCRAM_USERS
+              value: "true"
+            
+            - name: KAFKA_CLIENT_USERS
+              value: "user1"
+            - name: KAFKA_CLIENT_PASSWORDS_FILE
+              value: /opt/bitnami/kafka/config/secrets/client-passwords
+          ports:
+            - name: controller
+              containerPort: 9093
+            - name: client
+              containerPort: 9092
+            - name: interbroker
+              containerPort: 9094
+            - name: external
+              containerPort: 9095
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - pgrep
+                - -f
+                - kafka
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: "controller"
+          resources:
+            limits:
+              cpu: 750m
+              ephemeral-storage: 1024Mi
+              memory: 768Mi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 50Mi
+              memory: 512Mi
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/kafka
+            - name: logs
+              mountPath: /opt/bitnami/kafka/logs
+            - name: kafka-config
+              mountPath: /opt/bitnami/kafka/config/server.properties
+              subPath: server.properties
+            - name: tmp
+              mountPath: /tmp
+            - name: init-shared
+              mountPath: /shared
+            - name: kafka-sasl
+              mountPath: /opt/bitnami/kafka/config/secrets
+              readOnly: true
+      volumes:
+        - name: kafka-configmaps
+          configMap:
+            name: yabank-kafka-controller-configuration
+        - name: kafka-secret-config
+          emptyDir: {}
+        - name: kafka-config
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: init-shared
+          emptyDir: {}
+        - name: kafka-sasl
+          projected:
+            sources:
+              - secret:
+                  name:  yabank-kafka-user-passwords
+        - name: logs
+          emptyDir: {}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "8Gi"
+---
+# Source: ya-bank/charts/keycloak/charts/postgresql/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yabank-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/version: 17.4.0
+    helm.sh/chart: postgresql-16.6.6
+    app.kubernetes.io/component: primary
+spec:
+  replicas: 1
+  serviceName: yabank-postgresql-hl
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/component: primary
+  template:
+    metadata:
+      name: yabank-postgresql
+      labels:
+        app.kubernetes.io/instance: yabank
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: postgresql
+        app.kubernetes.io/version: 17.4.0
+        helm.sh/chart: postgresql-16.6.6
+        app.kubernetes.io/component: primary
+    spec:
+      serviceAccountName: yabank-postgresql
+      
+      automountServiceAccountToken: false
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: yabank
+                    app.kubernetes.io/name: postgresql
+                    app.kubernetes.io/component: primary
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      hostNetwork: false
+      hostIPC: false
+      containers:
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:17.4.0-debian-12-r17
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            # Authentication
+            - name: POSTGRES_USER
+              value: "bn_keycloak"
+            - name: POSTGRES_PASSWORD_FILE
+              value: /opt/bitnami/postgresql/secrets/password
+            - name: POSTGRES_POSTGRES_PASSWORD_FILE
+              value: /opt/bitnami/postgresql/secrets/postgres-password
+            - name: POSTGRES_DATABASE
+              value: "bitnami_keycloak"
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: "error"
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: "pgaudit"
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "bn_keycloak" -d "dbname=bitnami_keycloak" -h 127.0.0.1 -p 5432
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "bn_keycloak" -d "dbname=bitnami_keycloak" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+          resources:
+            limits:
+              cpu: 150m
+              ephemeral-storage: 1024Mi
+              memory: 192Mi
+            requests:
+              cpu: 100m
+              ephemeral-storage: 50Mi
+              memory: 128Mi
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/postgresql/tmp
+              subPath: app-tmp-dir
+            - name: postgresql-password
+              mountPath: /opt/bitnami/postgresql/secrets/
+            - name: dshm
+              mountPath: /dev/shm
+            - name: data
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: postgresql-password
+          secret:
+            secretName: yabank-postgresql
+        - name: dshm
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "8Gi"
+---
+# Source: ya-bank/charts/keycloak/templates/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: yabank-keycloak
+  namespace: "default"
+  labels:
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/version: 26.2.5
+    helm.sh/chart: keycloak-24.7.3
+    app.kubernetes.io/component: keycloak
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  podManagementPolicy: Parallel
+  serviceName: yabank-keycloak-headless
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: yabank
+      app.kubernetes.io/name: keycloak
+      app.kubernetes.io/component: keycloak
+  template:
+    metadata:
+      annotations:
+        checksum/configmap-env-vars: fc0e01a046a9530149e70efe052eaf31672e5d886cf7835870963dd96a119cff
+        checksum/secrets: 96682463f8fe9210c028b21c887536d9b13c0f31ce384d38d03e5d5092acd47a
+      labels:
+        app.kubernetes.io/instance: yabank
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: keycloak
+        app.kubernetes.io/version: 26.2.5
+        helm.sh/chart: keycloak-24.7.3
+        app.kubernetes.io/component: keycloak
+        app.kubernetes.io/app-version: 26.2.5
+    spec:
+      serviceAccountName: yabank-keycloak
+      
+      automountServiceAccountToken: true
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: yabank
+                    app.kubernetes.io/name: keycloak
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: Always
+        supplementalGroups: []
+        sysctls: []
+      enableServiceLinks: true
+      initContainers:
+        - name: prepare-write-dirs
+          image: docker.io/bitnami/keycloak:26.2.5-debian-12-r1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              . /opt/bitnami/scripts/liblog.sh
+
+              info "Copying writable dirs to empty dir"
+              # In order to not break the application functionality we need to make some
+              # directories writable, so we need to copy it to an empty dir volume
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/lib/quarkus /emptydir/app-quarkus-dir
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/data /emptydir/app-data-dir
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/providers /emptydir/app-providers-dir
+              cp -r --preserve=mode,timestamps /opt/bitnami/keycloak/themes /emptydir/app-themes-dir
+              info "Copy operation completed"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            limits:
+              cpu: 750m
+              ephemeral-storage: 1024Mi
+              memory: 768Mi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 50Mi
+              memory: 512Mi
+          volumeMounts:
+           - name: empty-dir
+             mountPath: /emptydir
+      containers:
+        - name: keycloak
+          image: docker.io/bitnami/keycloak:26.2.5-debian-12-r1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+            seLinuxOptions: {}
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD_FILE
+              value: /opt/bitnami/keycloak/secrets/admin-password
+            - name: KEYCLOAK_DATABASE_PASSWORD_FILE
+              value: /opt/bitnami/keycloak/secrets/db-password
+            - name: KEYCLOAK_HTTP_RELATIVE_PATH
+              value: "/"
+            - name: KC_SPI_ADMIN_REALM
+              value: "master"
+            - name: KEYCLOAK_EXTRA_ARGS
+              value: --import-realm
+          envFrom:
+            - configMapRef:
+                name: yabank-keycloak-env-vars
+          resources:
+            limits:
+              cpu: 750m
+              ephemeral-storage: 1024Mi
+              memory: 768Mi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 50Mi
+              memory: 512Mi
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: discovery
+              containerPort: 7800
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 300
+            periodSeconds: 1
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+            httpGet:
+              path: /realms/master
+              port: http
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /bitnami/keycloak
+              subPath: app-volume-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/conf
+              subPath: app-conf-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/lib/quarkus
+              subPath: app-quarkus-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/data
+              subPath: app-data-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/providers
+              subPath: app-providers-dir
+            - name: empty-dir
+              mountPath: /opt/bitnami/keycloak/themes
+              subPath: app-themes-dir
+            - name: keycloak-secrets
+              mountPath: /opt/bitnami/keycloak/secrets
+            - mountPath: /opt/bitnami/keycloak/data/import
+              name: realm-config
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: keycloak-secrets
+          projected:
+            sources:
+              - secret:
+                  name: yabank-keycloak
+              - secret:
+                  name: yabank-postgresql
+                  items:
+                    - key: password
+                      path: db-password
+        - configMap:
+            name: keycloak-realm-config
+          name: realm-config
+---
+# Source: ya-bank/charts/accounts-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-accounts-application
+  labels:
+    helm.sh/chart: accounts-application-0.1.0
+    app.kubernetes.io/name: accounts-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "gateway-ingress.yabank.local"
+      http:
+        paths:
+          - path: /accountsapplication(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-accounts-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+---
+# Source: ya-bank/charts/bank-ui-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-bank-ui-application
+  labels:
+    helm.sh/chart: bank-ui-application-0.1.0
+    app.kubernetes.io/name: bank-ui-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "bank.yabank.local"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-bank-ui-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+---
+# Source: ya-bank/charts/blocker-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-blocker-application
+  labels:
+    helm.sh/chart: blocker-application-0.1.0
+    app.kubernetes.io/name: blocker-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "gateway-ingress.yabank.local"
+      http:
+        paths:
+          - path: /blockerapplication(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-blocker-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+---
+# Source: ya-bank/charts/cash-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-cash-application
+  labels:
+    helm.sh/chart: cash-application-0.1.0
+    app.kubernetes.io/name: cash-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "gateway-ingress.yabank.local"
+      http:
+        paths:
+          - path: /cashApplication(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-cash-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+---
+# Source: ya-bank/charts/exchange-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-exchange-application
+  labels:
+    helm.sh/chart: exchange-application-0.1.0
+    app.kubernetes.io/name: exchange-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "gateway-ingress.yabank.local"
+      http:
+        paths:
+          - path: /exchangeApplication(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-exchange-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+---
+# Source: ya-bank/charts/notifications-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-notifications-application
+  labels:
+    helm.sh/chart: notifications-application-0.1.0
+    app.kubernetes.io/name: notifications-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "gateway-ingress.yabank.local"
+      http:
+        paths:
+          - path: /notificationsapplication(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-notifications-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+---
+# Source: ya-bank/charts/transfer-application/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: yabank-transfer-application
+  labels:
+    helm.sh/chart: transfer-application-0.1.0
+    app.kubernetes.io/name: transfer-application
+    app.kubernetes.io/instance: yabank
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "gateway-ingress.yabank.local"
+      http:
+        paths:
+          - path: /transferApplication(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: yabank-transfer-application
+                port:
+                  # Use the *name* of the service port (defined as 'http' in service.yaml)
+                  name: http
+

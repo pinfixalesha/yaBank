@@ -38,8 +38,9 @@
 - **Платформа для визуализации, мониторинга и анализа данных**: Grafana
 ![grafana_screen1.png](grafana_screen1.png)
 ![grafana_screen2.png](grafana_screen2.png)
-- **ELK-стек**: Logstash - логирование сообщений в Apache Kafka
+- **ELK-стек**: Logstash - логирование сообщений в Apache Kafka, Elasticsearch, Использование системы визуализации данных Kibana
 ![Logstash_screen2.png](Logstash_screen2.png)
+![kibana_screen1.png](kibana_screen1.png)
 
 ## Структура микросервисов
 

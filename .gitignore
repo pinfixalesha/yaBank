@@ -16,6 +16,7 @@ build/
 .sts4-cache
 .pg-oper-data
 .redis_data
+.elasticsearch
 bin/
 lib/
 !**/src/main/**/bin/

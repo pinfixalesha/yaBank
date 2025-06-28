@@ -52,6 +52,10 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-config:4.2.1'
 	implementation 'org.springframework.retry:spring-retry:2.0.11'
 
+	//Kafka
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 	//zipkin
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
