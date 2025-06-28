@@ -27,6 +27,12 @@ for ns in test prod; do
   helm uninstall db -n "$ns" || true
   helm uninstall keycloak -n "$ns" || true
   helm uninstall kafka -n "$ns" || true
+  helm uninstall zipkin -n "$ns" || true
+  helm uninstall prometheus -n "$ns" || true
+  helm uninstall grafana -n "$ns" || true
+  helm uninstall logstash -n "$ns" || true
+  helm uninstall elasticsearch -n "$ns" || true
+  helm uninstall kibana -n "$ns" || true
 done
 
 echo "Deleting secrets..."
