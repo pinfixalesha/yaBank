@@ -414,15 +414,6 @@ kafka:
       containerSecurityContext:
         seLinuxOptions: {}
 
-elasticsearch:
-  enabled: true
-
-kibana:
-  enabled: true
-
-logstash:
-  enabled: true
-
 zipkin:
   enabled: true
   storageType: mem
@@ -431,7 +422,7 @@ zipkin:
   self-tracing:
     enabled: false
 
-kube-prometheus-stack:
+kube-prometheus:
   additionalPrometheusRulesMap:
     custom-alerts:
       groups:
@@ -502,62 +493,70 @@ kube-prometheus-stack:
                 description: "Не удалось отправить Курсы валют в течении более минуты"
   prometheus:
     additionalScrapeConfigs:
-    - job_name: 'accounts-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-accounts-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'accounts-application'
-    - job_name: 'bank-ui-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-bank-ui-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'bank-ui-application'
-    - job_name: 'blocker-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-blocker-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'blocker-application'
-    - job_name: 'cash-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-cash-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'cash-application'
-    - job_name: 'exchange-generator-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-exchange-generator-application.{{ .Release.Namespace }}.svc.cluster.local:8091' ]
-          labels:
-            application: 'exchange-generator-application'
-    - job_name: 'exchange-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-exchange-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'exchange-application'
-    - job_name: 'notifications-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-notifications-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'notifications-application'
-    - job_name: 'transfer-application'
-      metrics_path: '/actuator/prometheus'
-      scrape_interval: 5s
-      static_configs:
-        - targets: [ 'yabank-transfer-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
-          labels:
-            application: 'transfer-application'
+      accounts-application:
+        job_name: 'accounts-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-accounts-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'accounts-application'
+      bank-ui-application:
+        job_name: 'bank-ui-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-bank-ui-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'bank-ui-application'
+      blocker-application:
+        job_name: 'blocker-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-blocker-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'blocker-application'
+      cash-application:
+        job_name: 'cash-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-cash-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'cash-application'
+      exchange-generator-application:
+        job_name: 'exchange-generator-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-exchange-generator-application.{{ .Release.Namespace }}.svc.cluster.local:8091' ]
+            labels:
+              application: 'exchange-generator-application'
+      exchange-application:
+        job_name: 'exchange-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-exchange-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'exchange-application'
+      notifications-application:
+        job_name: 'notifications-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-notifications-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'notifications-application'
+      transfer-application:
+        job_name: 'transfer-application'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: [ 'yabank-transfer-application.{{ .Release.Namespace }}.svc.cluster.local:80' ]
+            labels:
+              application: 'transfer-application'
     enableEndpointSlice: true
     prometheusSpec:
       serviceMonitorSelector: {}
@@ -570,3 +569,106 @@ kube-prometheus-stack:
   prometheus-node-exporter:
     hostRootFsMount:
       enabled: false
+
+
+kibana:
+  elasticsearchHosts: "http://yabank-elasticsearch.{{ .Release.Namespace }}.svc.cluster.local:9200"
+  elasticsearch:
+    ssl:
+      enabled: false
+  automountToken: false
+  service:
+    type: NodePort
+    nodePort: 32000
+  replicaCount: 1
+
+
+logstash:
+  esJavaOpts: "-Xmx1g -Xms1g"
+  logstashPipeline:
+    monitoring.conf: |
+      input {
+        kafka {
+          bootstrap_servers => "${KAFKA_BOOTSTRAP_SERVERS}"
+          topics => ["logs-topic"]
+          group_id => "logstash-group"
+          consumer_threads => 1
+        }
+      }
+      
+      filter {
+          mutate {
+            gsub => [
+              "message", "\n", "",
+              "message", "  +", " "
+            ]
+        }
+      
+        grok {
+          match => {
+            "message" => [
+                # https://www.javainuse.com/grok
+                # Паттерн для основных логов с traceId и spanId
+                "^%{TIMESTAMP_ISO8601:timestamp}\s\[%{DATA:thread}\]\s%{LOGLEVEL:level}\s%{DATA:logger}\s\-\s%{DATA:traceId}\:%{DATA:spanId}\s%{DATA:service_name}\s%{GREEDYDATA:message}",
+              
+                # Паттерн для логов без traceId/spanId
+                "^%{TIMESTAMP_ISO8601:timestamp}\s\[%{DATA:thread}\]\s%{LOGLEVEL:level}\s%{DATA:logger}\s%{GREEDYDATA:message}"
+            ]
+          }
+          tag_on_failure => ["_grokparsefailure"]
+        }
+      
+        if "_grokparsefailure" in [tags] {
+          mutate {
+            add_tag => "failed_grok"
+          }
+        }
+      
+        date {
+          match => [ "timestamp", "yyyy-MM-dd HH:mm:ss.SSS" ]
+          target => "@timestamp"
+        }
+      }
+
+      output {
+        elasticsearch {
+          hosts => ["http://yabank-elasticsearch.{{ .Release.Namespace }}.svc.cluster.local:9200"]
+          index => "logs-%{+YYYY.MM.dd}"
+          retry_on_conflict => 3
+          action => "index"
+        }
+
+        stdout {
+          codec => rubydebug {
+            metadata => true
+          }
+        }
+      }
+elasticsearch:
+  protocol: http
+  createCert: false
+  esJavaOpts: "-Xmx1g -Xms1g"
+  clusterHealthCheckParams: ""
+  tls:
+    enabled: false
+  masterService: "elasticsearch"
+  sysctlInitContainer:
+    enabled: true
+
+  replicas: 1
+  rbac:
+    create: false
+  esConfig:
+    elasticsearch.yml: |
+      cluster.name: yabank-cluster
+      node.name: node-1
+      network.host: 0.0.0.0
+      discovery.seed_hosts: ["127.0.0.1"]
+      discovery.type: single-node
+      bootstrap.memory_lock: true
+      path.data: /usr/share/elasticsearch/data
+      path.logs: /usr/share/elasticsearch/logs
+      xpack.security.enabled: false
+      xpack.security.transport.ssl.enabled: false
+      xpack.security.http.ssl.enabled: false
+      xpack.security.authc.token.enabled: false

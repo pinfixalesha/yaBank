@@ -149,7 +149,7 @@ git clone https://github.com/pinfixalesha/yaBank.git
    ```bash
    helm install yabank ./
    ```
-14. Доступ к приложени с использованием команды minikube для отображения url приложения  
+14. Доступ к приложению с использованием команды minikube для отображения url приложения  
     ```bash 
     minikube service yabank-bank-ui-application --url
     
@@ -198,20 +198,35 @@ git clone https://github.com/pinfixalesha/yaBank.git
     Phase:          Succeeded    
     ```
 
+# Проброс порта Zipkin
+    ```
+    kubectl port-forward svc/yabank-zipkin 9411:9411
+    ```
+
 # Проброс порта Prometheus
     ```
-    kubectl port-forward svc/prometheus-kube-prometheus-sta-prometheus 9090
+    kubectl port-forward svc/yabank-kube-prometheus-prometheus 9090
     ```
 
 # Проброс порта Grafana
     ```
-    kubectl port-forward svc/grafana 3000
+    kubectl port-forward svc/yabank-grafana 3000
     ```
 Дашборды необходимо импортировать вручную через UI Grafana. Выберите источник данных Prometheus и загрузите JSON-файлы из папки
 
 [YaBank_метрики.json](grafana%2Fprovisioning%2Fdashboards%2FYaBank_%D0%BC%D0%B5%D1%82%D1%80%D0%B8%D0%BA%D0%B8.json)
 [JVM_metrics_4701_rev10.json](grafana%2Fprovisioning%2Fdashboards%2FJVM_metrics_4701_rev10.json)
 [HTTP_metrics_21308_rev1.json](grafana%2Fprovisioning%2Fdashboards%2FHTTP_metrics_21308_rev1.json)
+
+# Kibana
+Доступ к приложению с использованием команды minikube для отображения url приложения
+    
+    ```bash 
+    minikube service yabank-kibana --url
+    
+    >http://127.0.0.1:51899
+    >! Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+    ```
 
 # Полезные команды для работы с Kubernetes и Helm
 
